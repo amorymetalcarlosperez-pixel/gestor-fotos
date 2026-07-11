@@ -1,0 +1,51 @@
+import type { DevicePhoto } from "../../services/photos";
+
+type Props = {
+  photo: DevicePhoto & {
+    url: string;
+  };
+
+  onDelete?: (photo: DevicePhoto) => void;
+};
+
+export default function PhotoCard({
+  photo,
+  onDelete,
+}: Props) {
+  return (
+    <div className="bg-white rounded-xl shadow overflow-hidden">
+
+      <img
+        src={photo.url}
+        alt={`Foto ${photo.orden}`}
+        className="w-full aspect-square object-cover"
+      />
+
+      <div className="p-3">
+
+        <div className="text-sm text-gray-600 truncate">
+          {`Fotografía ${photo.orden}`}
+        </div>
+
+        <div className="flex justify-between items-center mt-3">
+
+          <span className="text-xs text-gray-400">
+            #{photo.orden}
+          </span>
+
+          {onDelete && (
+            <button
+              onClick={() => onDelete(photo)}
+              className="text-red-600 hover:text-red-800 text-sm"
+            >
+              Eliminar
+            </button>
+          )}
+
+        </div>
+
+      </div>
+
+    </div>
+  );
+}

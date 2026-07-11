@@ -14,7 +14,11 @@
     "@supabase/ssr": "^0.12.0",
     "@supabase/supabase-js": "^2.110.1",
     "@tailwindcss/vite": "^4.3.2",
+    "@zxing/browser": "^0.2.1",
+    "file-saver": "^2.0.5",
+    "html5-qrcode": "^2.3.8",
     "install": "^0.13.0",
+    "jszip": "^3.10.1",
     "lucide-react": "^1.23.0",
     "npm": "^11.18.0",
     "react": "^19.2.7",
@@ -23,9 +27,11 @@
     "react-hot-toast": "^2.6.0",
     "react-router-dom": "^7.18.1",
     "tailwindcss": "^4.3.2",
+    "xlsx": "^0.18.5",
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@types/file-saver": "^2.0.7",
     "@types/node": "^24.13.2",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
