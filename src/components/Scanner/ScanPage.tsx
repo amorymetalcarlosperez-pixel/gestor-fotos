@@ -1,13 +1,10 @@
 import { useState } from "react";
 import BarcodeScanner from "../../components/Scanner/BarcodeScanner";
-import { useNavigate, useParams } from "react-router-dom";
 
-import {
-    findByAssetTag
-} from "../../services/scanner";
 export default function ScanPage() {
 
-  const [code, setCode] = useState("");
+  const [code, setCode] =
+    useState("");
 
   return (
 
@@ -22,18 +19,26 @@ export default function ScanPage() {
       {!code && (
 
         <BarcodeScanner
+
           onDetected={setCode}
+
+          onClose={() => {}}
+
         />
 
       )}
 
       {code && (
 
-        <div className="text-2xl mt-10">
+        <div className="mt-10">
 
-          Código leído:
+          <div className="text-lg">
 
-          <div className="font-bold mt-4">
+            Código leído
+
+          </div>
+
+          <div className="mt-4 text-2xl font-bold break-all">
 
             {code}
 

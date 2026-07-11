@@ -13,11 +13,6 @@ type Device = {
   ubicacion_zip: string;
 };
 
-type Ubicacion = {
-  nombre: string;
-  total: number;
-};
-
 export default function Category() {
 
   const {

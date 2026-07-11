@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import DeviceInfo from "../../components/Device/DeviceInfo";
 import PhotoGallery from "../../components/Device/PhotoGallery";
 import ScannerDialog from "../../components/Device/ScannerDialog";
 import Page from "../../components/ui/Page";
@@ -33,7 +32,6 @@ export default function Device() {
   const {
     projectId,
     category,
-    location,
     deviceId,
   } = useParams();
 
