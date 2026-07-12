@@ -26,17 +26,17 @@ export default function DeviceInfo({
   children,
 }: DeviceInfoProps) {
   return (
-    <div className="bg-white rounded-xl shadow p-6">
+    <div className="card-surface rounded-[24px] border border-white/10 p-6">
 
       <div className="flex justify-between items-start">
 
         <div>
 
-          <h2 className="text-2xl font-bold">
+          <h2 className="text-2xl font-bold text-white">
             {nombreZip}
           </h2>
 
-          <p className="text-gray-600 mt-1">
+          <p className="mt-1 text-slate-400">
             {displayName}
           </p>
 
@@ -110,11 +110,11 @@ function Campo({
   return (
     <div>
 
-      <div className="text-sm text-gray-500">
-        {titulo}
-      </div>
+<div className="text-sm text-slate-400">
+            {titulo}
+          </div>
 
-      <div className="font-medium break-all">
+          <div className="break-all font-medium text-slate-200">
         {valor || "-"}
       </div>
 

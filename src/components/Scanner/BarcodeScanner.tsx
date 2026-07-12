@@ -1,12 +1,5 @@
-import { useEffect, useRef } from "react";
-import {
-  BrowserMultiFormatReader,
-} from "@zxing/browser";
-import {
-  BarcodeFormat,
-  DecodeHintType,
-} from "@zxing/library";
-import type { IScannerControls } from "@zxing/browser";
+﻿import { useEffect, useRef, useState } from "react";
+import { Html5Qrcode } from "html5-qrcode";
 
 type Props = {
   onDetected: (code: string) => void;
@@ -17,127 +10,89 @@ export default function BarcodeScanner({
   onDetected,
   onClose,
 }: Props) {
-  const videoRef =
-    useRef<HTMLVideoElement>(null);
+  const scannerRef = useRef<Html5Qrcode | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-
-    const hints = new Map();
-
-    hints.set(
-      DecodeHintType.POSSIBLE_FORMATS,
-      [
-        BarcodeFormat.CODE_128,
-        BarcodeFormat.CODE_39,
-        BarcodeFormat.EAN_13,
-        BarcodeFormat.EAN_8,
-        BarcodeFormat.QR_CODE,
-      ]
-    );
-
-    const reader =
-      new BrowserMultiFormatReader(hints);
-
-    let controls:
-      IScannerControls | null = null;
-
+    let cancelled = false;
     let detected = false;
+    const scanner = new Html5Qrcode("barcode-reader-region");
+    scannerRef.current = scanner;
 
-    async function start() {
-
-      if (!videoRef.current)
-        return;
+    async function startScanner() {
+      const config = {
+        fps: 10,
+        qrbox: { width: 260, height: 260 },
+      };
 
       try {
-
-        controls =
-          await reader.decodeFromConstraints(
-
-            {
-              video: {
-                facingMode: {
-                  ideal: "environment",
-                },
-                width: {
-                  ideal: 1920,
-                },
-                height: {
-                  ideal: 1080,
-                },
-              },
-            },
-
-            videoRef.current,
-
-            (result) => {
-
-              if (!result)
-                return;
-
-              if (detected)
-                return;
-
+        await scanner.start(
+          { facingMode: "environment" },
+          config,
+          (decodedText) => {
+            if (detected || cancelled) return;
+            detected = true;
+            if ("vibrate" in navigator) navigator.vibrate(150);
+            onDetected(decodedText);
+          },
+          () => {
+            // Ignorar errores de decodificación individuales.
+          }
+        );
+      } catch (firstError) {
+        try {
+          await scanner.start(
+            { facingMode: "user" },
+            config,
+            (decodedText) => {
+              if (detected || cancelled) return;
               detected = true;
-
-              controls?.stop();
-
-              if ("vibrate" in navigator) {
-                navigator.vibrate(150);
-              }
-
-              onDetected(
-                result.getText()
-              );
-
+              if ("vibrate" in navigator) navigator.vibrate(150);
+              onDetected(decodedText);
+            },
+            () => {
+              // Ignorar errores de decodificación individuales.
             }
-
           );
-
+        } catch (secondError) {
+          console.error(secondError);
+          if (!cancelled) {
+            setError("No se ha podido acceder a la cámara. Permite el acceso y vuelve a intentarlo.");
+          }
+        }
       }
-     catch (e: any) {
-  // Ignorar los "NotFoundException", son normales
-      if (e?.name !== "NotFoundException") {
-        console.error(e);
-      }
-      } 
-
     }
 
-    start();
+    void startScanner();
 
     return () => {
-
-      detected = true;
-
-      controls?.stop();
-
-     
-
+      cancelled = true;
+      scannerRef.current?.stop().catch(() => undefined);
     };
-
-  }, []);
+  }, [onDetected]);
 
   return (
+    <div className="relative h-[70vh] min-h-[420px] overflow-hidden rounded-2xl bg-black">
+      <div id="barcode-reader-region" className="h-full w-full" />
 
-    <div className="fixed inset-0 bg-black z-50">
+      {error && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black/80 px-6 text-center text-sm text-white">
+          {error}
+        </div>
+      )}
 
-      <video
-        ref={videoRef}
-        autoPlay
-        playsInline
-        muted
-        className="w-full h-full object-cover"
-      />
+      <div className="absolute inset-x-0 top-4 flex justify-center px-4">
+        <div className="rounded-full bg-black/60 px-4 py-2 text-sm text-white">
+          Apunta al código de barras
+        </div>
+      </div>
 
       <button
         onClick={onClose}
-        className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-red-600 text-white px-8 py-3 rounded-xl"
+        className="absolute bottom-6 left-1/2 -translate-x-1/2 rounded-xl bg-red-600 px-8 py-3 text-white"
       >
         Cancelar
       </button>
-
     </div>
-
   );
-
 }

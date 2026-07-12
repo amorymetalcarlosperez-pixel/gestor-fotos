@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getProjects } from "../../services/projects";
-import { supabase } from "../../services/supabase";
 
 type Project = {
   id: string;
@@ -12,132 +11,208 @@ type Project = {
 };
 
 export default function Dashboard() {
+
   const navigate = useNavigate();
 
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [projects, setProjects] =
+    useState<Project[]>([]);
+
+  const [loading, setLoading] =
+    useState(true);
 
   async function cargarProyectos() {
+
     setLoading(true);
 
-    const { data, error } = await getProjects();
+    const { data, error } =
+      await getProjects();
 
     if (error) {
+
       console.error(error);
+
     } else {
-      setProjects((data as Project[]) || []);
+
+      setProjects(
+        (data as Project[]) ?? []
+      );
+
     }
 
     setLoading(false);
-  }
 
-  async function cerrarSesion() {
-    await supabase.auth.signOut();
-    navigate("/");
   }
 
   useEffect(() => {
+
     cargarProyectos();
+
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-100">
 
-      <header className="bg-white shadow">
+    <div className="min-h-screen">
 
-        <div className="max-w-6xl mx-auto flex justify-between items-center p-6">
+      <div className="mx-auto max-w-md min-h-screen">
 
-          <h1 className="text-3xl font-bold">
-            Gestor de Proyectos
-          </h1>
+        <div className="sticky top-0 z-20 bg-slate-950/60 backdrop-blur-xl">
 
-          <div className="flex gap-3">
+          <div className="px-5 pt-safe pt-6 pb-5">
 
-            <button
-              onClick={() => navigate("/projects/new")}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg"
-            >
-              Nuevo proyecto
-            </button>
+            <h1 className="text-3xl font-bold text-white">
 
-            <button
-              onClick={cerrarSesion}
-              className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-lg"
-            >
-              Cerrar sesión
-            </button>
+              Proyectos
+
+            </h1>
+
+            <p className="mt-1 text-slate-400">
+
+              {projects.length} proyectos
+
+            </p>
 
           </div>
 
         </div>
 
-      </header>
+        <div className="px-4 pb-24 space-y-4">
 
-      <main className="max-w-6xl mx-auto p-6">
+          <button
 
-        {loading ? (
-          <p>Cargando proyectos...</p>
-        ) : projects.length === 0 ? (
+            onClick={() => navigate("/projects/new")}
 
-          <div className="bg-white rounded-xl shadow p-8 text-center">
+            className="
+              btn-spotify
+              w-full
+              rounded-[24px]
+              py-4
+              text-lg
+              font-semibold
+              text-white
+            "
 
-            <h2 className="text-2xl font-semibold">
-              Todavía no hay proyectos
-            </h2>
+          >
 
-            <p className="text-gray-500 mt-2 mb-6">
-              Pulsa en "Nuevo proyecto" para crear el primero.
-            </p>
+            + Nuevo proyecto
 
-            <button
-              onClick={() => navigate("/projects/new")}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg"
-            >
-              Crear proyecto
-            </button>
+          </button>
 
-          </div>
+          {loading ? (
 
-        ) : (
+            <div className="card-surface rounded-[24px] p-8 text-center">
 
-          <div className="grid gap-4">
+              <div className="text-slate-300">
 
-            {projects.map((project) => (
+                Cargando proyectos...
+
+              </div>
+
+            </div>
+
+          ) : projects.length === 0 ? (
+
+            <div className="card-surface rounded-[24px] p-8 text-center">
+
+              <h2 className="text-xl font-semibold text-white">
+
+                Todavía no hay proyectos
+
+              </h2>
+
+              <p className="mt-3 text-slate-400">
+
+                Pulsa en "Nuevo proyecto" para crear el primero.
+
+              </p>
+
+            </div>
+
+          ) : (
+
+            projects.map(project => (
 
               <div
+
                 key={project.id}
-                onClick={() => navigate(`/projects/${project.id}`)}
-                className="bg-white rounded-xl shadow p-5 hover:shadow-lg cursor-pointer transition"
+
+                onClick={() =>
+                  navigate(`/projects/${project.id}`)
+                }
+
+                className="
+                  card-surface
+                  rounded-[24px]
+                  p-5
+                  cursor-pointer
+                  transition
+                  hover:scale-[1.01]
+                  active:scale-[0.99]
+                "
+
               >
 
-                <h2 className="text-xl font-bold">
-                  {project.nombre}
-                </h2>
+                <div className="flex items-start justify-between">
 
-                <p className="text-gray-600 mt-2">
-                  {project.descripcion}
-                </p>
+                  <div>
 
-                <div className="flex justify-between mt-5 text-sm text-gray-500">
+                    <h2 className="text-xl font-bold text-white">
 
-                  <span>{project.estado}</span>
+                      {project.nombre}
 
-                  <span>
-                    {new Date(project.created_at).toLocaleDateString()}
+                    </h2>
+
+                    <p className="mt-2 text-slate-400">
+
+                      {project.descripcion}
+
+                    </p>
+
+                  </div>
+
+                  <span
+                    className="
+                      rounded-full
+                      bg-blue-500/15
+                      px-3
+                      py-1
+                      text-xs
+                      font-semibold
+                      text-blue-300
+                    "
+                  >
+
+                    {project.estado}
+
                   </span>
+
+                </div>
+
+                <div className="mt-5 border-t border-white/10 pt-4">
+
+                  <div className="text-sm text-slate-500">
+
+                    Creado el{" "}
+
+                    {new Date(
+                      project.created_at
+                    ).toLocaleDateString()}
+
+                  </div>
 
                 </div>
 
               </div>
 
-            ))}
+            ))
 
-          </div>
+          )}
 
-        )}
+        </div>
 
-      </main>
+      </div>
 
     </div>
+
   );
+
 }

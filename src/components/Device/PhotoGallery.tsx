@@ -29,9 +29,7 @@ export default function PhotoGallery({
 }: Props) {
 
   const [photos, setPhotos] = useState<
-    (DevicePhoto & {
-      url: string;
-    })[]
+    (DevicePhoto & { url: string })[]
   >([]);
 
   const [cameraOpen, setCameraOpen] =
@@ -41,18 +39,31 @@ export default function PhotoGallery({
     useState(false);
 
   useEffect(() => {
+
     const handleOpenCamera = () => {
-      console.log("[PhotoGallery] open-photo-camera received");
+
       if (!saving) {
+
         setCameraOpen(true);
+
       }
+
     };
 
-    window.addEventListener("open-photo-camera", handleOpenCamera);
+    window.addEventListener(
+      "open-photo-camera",
+      handleOpenCamera
+    );
 
     return () => {
-      window.removeEventListener("open-photo-camera", handleOpenCamera);
+
+      window.removeEventListener(
+        "open-photo-camera",
+        handleOpenCamera
+      );
+
     };
+
   }, [saving]);
 
   useEffect(() => {
@@ -65,11 +76,20 @@ export default function PhotoGallery({
   ]);
 
   useEffect(() => {
+
     if (forceOpen && !saving) {
+
       setCameraOpen(true);
+
       onOpenHandled?.();
+
     }
-  }, [forceOpen, onOpenHandled, saving]);
+
+  }, [
+    forceOpen,
+    onOpenHandled,
+    saving,
+  ]);
 
   async function cargar() {
 
@@ -82,7 +102,7 @@ export default function PhotoGallery({
     const lista =
       await Promise.all(
 
-        (data ?? []).map(async (photo) => ({
+        (data ?? []).map(async photo => ({
 
           ...photo,
 
@@ -99,9 +119,7 @@ export default function PhotoGallery({
 
   }
 
-  async function capturar(
-    file: File
-  ) {
+  async function capturar(file: File) {
 
     if (saving)
       return;
@@ -178,71 +196,77 @@ export default function PhotoGallery({
 
   return (
 
-    <div className="mt-6 bg-white rounded-3xl p-5 shadow border border-slate-100 relative">
+    <section className="mt-8">
 
-      <div className="flex justify-between items-center mb-5">
+      <div className="flex items-center justify-between mb-5">
 
         <div>
 
-          <div className="text-2xl font-bold">
+          <h2 className="text-xl font-bold text-white">
 
             {carpeta}
 
-          </div>
+          </h2>
 
-          <div className="text-slate-500">
+          <p className="mt-1 text-slate-400">
 
             {photos.length} fotografías
 
-          </div>
+          </p>
 
         </div>
 
-      </div>
-
-      <div className="mb-5">
         <button
           type="button"
           onClick={(e) => {
+
             e.preventDefault();
+
             e.stopPropagation();
+
             setCameraOpen(true);
+
           }}
           disabled={saving}
           className="
-            w-full
+            btn-spotify
             rounded-2xl
-            bg-slate-900
-            text-white
             px-5
             py-3
-            touch-manipulation
-            select-none
-            min-h-12
-            relative z-20
+            text-white
+            transition
+            disabled:opacity-50
           "
         >
-          Añadir foto
-        </button>
-      </div>
 
-      <div className="mb-5">
-        <div className="text-sm text-slate-500">
-          Añade una foto desde aquí
-        </div>
+          {saving
+            ? "Guardando..."
+            : "Añadir foto"}
+
+        </button>
+
       </div>
 
       {photos.length === 0 ? (
 
-        <div className="rounded-2xl border-2 border-dashed border-slate-300 p-10 text-center">
+        <div
+          className="
+            rounded-3xl
+            border
+            border-white/10
+            bg-white/5
+            p-10
+            text-center
+          "
+        >
 
-          <div className="text-lg font-medium text-slate-700">
+          <div className="text-lg font-semibold text-white">
 
             Todavía no hay fotografías
 
           </div>
 
-          <div className="text-slate-500 mt-2">
+          <div className="mt-2 text-slate-400">
 
             Pulsa "Añadir foto" para comenzar.
 
@@ -252,40 +276,29 @@ export default function PhotoGallery({
 
       ) : (
 
-        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4">
 
-          {photos.map((photo) => (
+          {photos.map(photo => (
 
             <PhotoCard
-
               key={photo.id}
-
               photo={photo}
-
               onDelete={borrar}
-
             />
 
           ))}
 
         </div>
-        
 
       )}
 
       <CameraDialog
-
         open={cameraOpen}
-
-        onClose={() =>
-          setCameraOpen(false)
-        }
-
+        onClose={() => setCameraOpen(false)}
         onCapture={capturar}
-
       />
 
-    </div>
+    </section>
 
   );
 

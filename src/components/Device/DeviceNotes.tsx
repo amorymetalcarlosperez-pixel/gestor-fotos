@@ -33,9 +33,9 @@ export default function DeviceNotes({
 
   return (
 
-    <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100">
+    <div className="card-surface rounded-[24px] border border-white/10 p-5">
 
-      <div className="font-semibold mb-3">
+      <div className="mb-3 font-semibold text-white">
 
         Observaciones
 
@@ -53,11 +53,14 @@ export default function DeviceNotes({
 
         className="
           w-full
-          rounded-xl
+          rounded-2xl
           border
-          border-slate-300
+          border-white/10
+          bg-slate-950/60
           p-4
+          text-white
           resize-none
+          placeholder:text-slate-500
           focus:outline-none
           focus:ring-2
           focus:ring-blue-500

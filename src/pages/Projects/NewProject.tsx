@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Card from "../../components/ui/Card";
+import Page from "../../components/ui/Page";
 import { createProject } from "../../services/projects";
 
 export default function NewProject() {
@@ -37,46 +39,58 @@ export default function NewProject() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-8">
-        Nuevo Proyecto
-      </h1>
+    <Page title="Nuevo proyecto" subtitle="Importa un inventario y empieza a trabajar">
+      <Card className="mt-2">
+        <div className="space-y-4">
+          <label className="block">
+            <span className="mb-2 block text-sm font-medium text-slate-300">
+              Nombre del proyecto
+            </span>
+            <input
+              className="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Nombre del proyecto"
+              value={nombre}
+              onChange={(e) => setNombre(e.target.value)}
+            />
+          </label>
 
-      <div className="space-y-4">
+          <label className="block">
+            <span className="mb-2 block text-sm font-medium text-slate-300">
+              Descripción
+            </span>
+            <textarea
+              className="min-h-28 w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Describe el proyecto"
+              value={descripcion}
+              onChange={(e) => setDescripcion(e.target.value)}
+            />
+          </label>
 
-        <input
-          className="border rounded w-full p-3"
-          placeholder="Nombre del proyecto"
-          value={nombre}
-          onChange={(e) => setNombre(e.target.value)}
-        />
+          <label className="block">
+            <span className="mb-2 block text-sm font-medium text-slate-300">
+              Inventario Excel
+            </span>
+            <input
+              type="file"
+              accept=".xlsx,.xls"
+              className="block w-full cursor-pointer rounded-2xl border border-dashed border-white/15 bg-slate-950/50 px-4 py-4 text-sm text-slate-300 file:mr-4 file:rounded-xl file:border-0 file:bg-blue-600/80 file:px-4 file:py-2 file:text-white"
+              onChange={(e) => {
+                if (e.target.files?.length) {
+                  setExcel(e.target.files[0]);
+                }
+              }}
+            />
+          </label>
 
-        <textarea
-          className="border rounded w-full p-3"
-          placeholder="Descripción"
-          value={descripcion}
-          onChange={(e) => setDescripcion(e.target.value)}
-        />
-
-        <input
-          type="file"
-          accept=".xlsx,.xls"
-          onChange={(e) => {
-            if (e.target.files?.length) {
-              setExcel(e.target.files[0]);
-            }
-          }}
-        />
-
-        <button
-          disabled={guardando}
-          onClick={guardarProyecto}
-          className="bg-blue-600 text-white rounded px-6 py-3"
-        >
-          {guardando ? "Guardando..." : "Crear Proyecto"}
-        </button>
-
-      </div>
-    </div>
+          <button
+            disabled={guardando}
+            onClick={guardarProyecto}
+            className="w-full rounded-2xl btn-spotify px-6 py-3 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {guardando ? "Guardando..." : "Crear Proyecto"}
+          </button>
+        </div>
+      </Card>
+    </Page>
   );
 }
