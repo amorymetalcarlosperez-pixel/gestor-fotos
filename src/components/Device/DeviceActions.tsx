@@ -8,6 +8,10 @@ type Props = {
   onFinish: () => void;
 
   onReopen: () => void;
+
+  onAddBefore?: () => void;
+
+  onAddAfter?: () => void;
 };
 
 export default function DeviceActions({
@@ -16,6 +20,8 @@ export default function DeviceActions({
   onVerify,
   onFinish,
   onReopen,
+  onAddBefore,
+  onAddAfter,
 }: Props) {
 
   return (
@@ -53,6 +59,24 @@ export default function DeviceActions({
           : "🏷 Verificar Asset"}
 
       </button>
+
+      <div className="grid grid-cols-2 gap-3">
+        <button
+          type="button"
+          onClick={onAddBefore}
+          className="w-full rounded-2xl bg-blue-600 px-4 py-3 font-semibold text-white"
+        >
+          📷 Antes
+        </button>
+
+        <button
+          type="button"
+          onClick={onAddAfter}
+          className="w-full rounded-2xl bg-purple-600 px-4 py-3 font-semibold text-white"
+        >
+          📷 Después
+        </button>
+      </div>
 
       {finalizado ? (
 

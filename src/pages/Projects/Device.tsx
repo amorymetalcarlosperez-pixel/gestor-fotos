@@ -53,8 +53,10 @@ const photoDevice =
 
   const [scannerOpen, setScannerOpen] =
     useState(false);
-    const [comments, setComments] =
-  useState("");
+  const [comments, setComments] =
+    useState("");
+  const [activePhotoSection, setActivePhotoSection] =
+    useState<"ANTES" | "DESPUES" | null>(null);
 
   useEffect(() => {
 
@@ -300,6 +302,10 @@ ${codigo}
 
   }
 
+  function abrirFotos(carpeta: "ANTES" | "DESPUES") {
+    setActivePhotoSection(carpeta);
+  }
+
   if (loading) {
 
     return (
@@ -460,30 +466,26 @@ async function actualizarEstado() {
       
 
         <DeviceActions
-
           finalizado={status?.finalizado ?? false}
-
           assetVerificado={status?.asset_verificado ?? false}
-
           onVerify={() => setScannerOpen(true)}
-
           onFinish={finalizar}
-
           onReopen={reabrir}
-
+          onAddBefore={() => abrirFotos("ANTES")}
+          onAddAfter={() => abrirFotos("DESPUES")}
         />
     </div>
 
 
     <div className="mt-8">
-
       <PhotoGallery
-       projectId={projectId!}
+        projectId={projectId!}
         deviceId={photoDevice!.id}
-       carpeta="ANTES"
+        carpeta="ANTES"
         onChanged={actualizarEstado}
+        forceOpen={activePhotoSection === "ANTES"}
+        onOpenHandled={() => setActivePhotoSection(null)}
       />
-
     </div>
 
     <PhotoGallery
@@ -491,6 +493,8 @@ async function actualizarEstado() {
       deviceId={photoDevice!.id}
       carpeta="DESPUES"
       onChanged={actualizarEstado}
+      forceOpen={activePhotoSection === "DESPUES"}
+      onOpenHandled={() => setActivePhotoSection(null)}
     />
 
     <ScannerDialog

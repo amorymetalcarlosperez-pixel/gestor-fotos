@@ -15,6 +15,8 @@ type Props = {
   deviceId: string;
   carpeta: "ANTES" | "DESPUES";
   onChanged?: () => void;
+  forceOpen?: boolean;
+  onOpenHandled?: () => void;
 };
 
 export default function PhotoGallery({
@@ -22,6 +24,8 @@ export default function PhotoGallery({
   deviceId,
   carpeta,
   onChanged,
+  forceOpen = false,
+  onOpenHandled,
 }: Props) {
 
   const [photos, setPhotos] = useState<
@@ -59,6 +63,13 @@ export default function PhotoGallery({
     deviceId,
     carpeta,
   ]);
+
+  useEffect(() => {
+    if (forceOpen && !saving) {
+      setCameraOpen(true);
+      onOpenHandled?.();
+    }
+  }, [forceOpen, onOpenHandled, saving]);
 
   async function cargar() {
 
