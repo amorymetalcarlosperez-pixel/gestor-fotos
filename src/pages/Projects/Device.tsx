@@ -487,17 +487,11 @@ async function actualizarEstado() {
     </div>
 
     <PhotoGallery
-  projectId={projectId!}
-  deviceId={photoDevice!.id}
-  carpeta="DESPUES"
-  onChanged={actualizarEstado}
-  />
-  <PhotoGallery
-  projectId={projectId!}
-  deviceId={photoDevice!.id}
-  carpeta="DESPUES"
-  onChanged={actualizarEstado}
-  />
+      projectId={projectId!}
+      deviceId={photoDevice!.id}
+      carpeta="DESPUES"
+      onChanged={actualizarEstado}
+    />
 
     <ScannerDialog
 

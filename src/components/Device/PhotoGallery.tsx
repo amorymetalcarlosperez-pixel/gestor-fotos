@@ -174,7 +174,9 @@ export default function PhotoGallery({
 
         <button
           type="button"
-          onClick={() => {
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
             setCameraOpen(true);
           }}
           disabled={saving}
@@ -185,6 +187,10 @@ export default function PhotoGallery({
             px-5
             py-3
             touch-manipulation
+            select-none
+            min-h-12
+            min-w-32
+            relative z-10
           "
         >
           Añadir foto
