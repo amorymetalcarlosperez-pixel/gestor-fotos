@@ -6,6 +6,8 @@ import {
   type ProjectDevice,
 } from "../../services/projectDevices";
 
+import { getDeviceStatus } from "../../services/deviceStatus";
+
 import Page from "../../components/ui/Page";
 import Card from "../../components/ui/Card";
 import Status from "../../components/ui/Status";
@@ -22,6 +24,9 @@ export default function Location() {
 
   const [devices, setDevices] =
     useState<ProjectDevice[]>([]);
+
+  const [deviceStates, setDeviceStates] =
+    useState<Record<string, boolean>>({});
 
   const [loading, setLoading] =
     useState(true);
@@ -47,9 +52,7 @@ export default function Location() {
     const {
       data,
       error,
-    } = await getProjectDevices(
-      projectId!
-    );
+    } = await getProjectDevices(projectId!);
 
     if (error) {
 
@@ -62,9 +65,32 @@ export default function Location() {
     }
 
     const todos =
-      data ?? [];
+      (data ?? []) as ProjectDevice[];
 
     setDevices(todos);
+
+    //---------------------------------
+    // Leer estado directamente
+    // desde device_status
+    //---------------------------------
+
+    const estados: Record<string, boolean> = {};
+
+    await Promise.all(
+
+      todos.map(async (d) => {
+
+        const { data } =
+          await getDeviceStatus(d.id);
+
+        estados[d.id] =
+          data?.finalizado ?? false;
+
+      })
+
+    );
+
+    setDeviceStates(estados);
 
     setLoading(false);
 
@@ -94,8 +120,7 @@ export default function Location() {
       );
 
     //---------------------------------
-    // Si solo hay un dispositivo,
-    // entrar directamente
+    // Si solo hay un dispositivo
     //---------------------------------
 
     if (lista.length === 1) {
@@ -231,9 +256,7 @@ export default function Location() {
 
             <Status
               completed={
-                Array.isArray(device.device_status)
-                  ? (device.device_status[0]?.finalizado ?? false)
-                  : (device.device_status?.finalizado ?? false)
+                deviceStates[device.id] ?? false
               }
             />
 
