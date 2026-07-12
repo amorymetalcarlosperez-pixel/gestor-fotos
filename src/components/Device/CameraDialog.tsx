@@ -19,9 +19,32 @@ function MobileCameraInput({
 
   useEffect(() => {
 
-    inputRef.current?.click();
+    const input = inputRef.current;
 
-  }, []);
+    if (!input) {
+      onClose();
+      return;
+    }
+
+    const handleChange = async (e: Event) => {
+      const target = e.target as HTMLInputElement;
+      const file = target.files?.[0];
+
+      if (file) {
+        await onCapture(file);
+      }
+
+      onClose();
+    };
+
+    input.addEventListener("change", handleChange);
+    input.click();
+
+    return () => {
+      input.removeEventListener("change", handleChange);
+    };
+
+  }, [onCapture, onClose]);
 
   return (
 
@@ -36,21 +59,6 @@ function MobileCameraInput({
       capture="environment"
 
       style={{ display: "none" }}
-
-      onChange={async (e) => {
-
-        const file =
-          e.target.files?.[0];
-
-        if (file) {
-
-          await onCapture(file);
-
-        }
-
-        onClose();
-
-      }}
 
     />
 
@@ -83,18 +91,34 @@ export default function CameraDialog({
 
   if (esMovil) {
 
-  return createPortal(
+    return createPortal(
+      <div
+        className="fixed inset-0 z-[9999] bg-black/80 flex items-center justify-center p-4"
+      >
+        <div className="w-full max-w-md rounded-2xl bg-white p-4 shadow-2xl">
+          <div className="mb-4 text-lg font-semibold">
+            Añadir fotografía
+          </div>
+          <div className="mb-4 text-sm text-slate-600">
+            Elige una foto desde la galería o usa la cámara del dispositivo.
+          </div>
+          <MobileCameraInput
+            onCapture={onCapture}
+            onClose={onClose}
+          />
+          <button
+            type="button"
+            onClick={onClose}
+            className="w-full rounded-xl bg-slate-900 px-4 py-3 text-white"
+          >
+            Cancelar
+          </button>
+        </div>
+      </div>,
+      document.body
+    );
 
-    <MobileCameraInput
-      onCapture={onCapture}
-      onClose={onClose}
-    />,
-
-    document.body
-
-  );
-
-}
+  }
 
   //----------------------------------------
   // PC → Webcam
