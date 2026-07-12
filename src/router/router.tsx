@@ -1,6 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
-
-const basename = "/gestor-fotos";
+import { createHashRouter } from "react-router-dom";
 
 import Login from "../pages/Login/Login";
 import Dashboard from "../pages/Dashboard/Dashboard";
@@ -11,7 +9,7 @@ import Category from "../pages/Projects/Category";
 import Location from "../pages/Projects/Location";
 import Device from "../pages/Projects/Device";
 import UnknownDevice from "../pages/Scanner/UnknownDevice";
-export const router = createBrowserRouter([
+export const router = createHashRouter([
   {
     path: "/",
     element: <Login />,
@@ -48,6 +46,4 @@ export const router = createBrowserRouter([
     path: "/projects/:projectId/:category/:location/:deviceId",
     element: <Device />,
   },
-], {
-  basename,
-});
+]);
