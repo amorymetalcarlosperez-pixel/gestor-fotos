@@ -1,6 +1,6 @@
 import { createPortal } from "react-dom";
 import CameraCapture from "./CameraCapture";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 function MobileCameraInput({
 
@@ -17,18 +17,11 @@ function MobileCameraInput({
   const inputRef =
     useRef<HTMLInputElement>(null);
 
-  const [isOpen, setIsOpen] = useState(false);
-
   useEffect(() => {
-
-    if (!isOpen) {
-      return;
-    }
 
     const input = inputRef.current;
 
     if (!input) {
-      setIsOpen(false);
       onClose();
       return;
     }
@@ -41,36 +34,31 @@ function MobileCameraInput({
         await onCapture(file);
       }
 
-      setIsOpen(false);
       onClose();
     };
 
     input.addEventListener("change", handleChange);
-    input.click();
+
+    const timer = window.setTimeout(() => {
+      input.click();
+    }, 120);
 
     return () => {
+      window.clearTimeout(timer);
       input.removeEventListener("change", handleChange);
     };
 
-  }, [isOpen, onCapture, onClose]);
+  }, [onCapture, onClose]);
 
   return (
-    <>
-      <input
-        ref={inputRef}
-        type="file"
-        accept="image/*"
-        capture="environment"
-        className="mb-3 w-full rounded-xl border border-slate-300 p-3"
-      />
-      <button
-        type="button"
-        onClick={() => setIsOpen(true)}
-        className="mb-3 w-full rounded-xl bg-slate-900 px-4 py-3 text-white"
-      >
-        Elegir foto o cámara
-      </button>
-    </>
+    <input
+      ref={inputRef}
+      type="file"
+      accept="image/*"
+      capture="environment"
+      className="sr-only"
+      aria-hidden="true"
+    />
   );
 
 }
@@ -109,7 +97,7 @@ export default function CameraDialog({
             Añadir fotografía
           </div>
           <div className="mb-4 text-sm text-slate-600">
-            Elige una foto desde la galería o usa la cámara del dispositivo.
+            Abriendo la cámara del dispositivo…
           </div>
           <MobileCameraInput
             onCapture={onCapture}
