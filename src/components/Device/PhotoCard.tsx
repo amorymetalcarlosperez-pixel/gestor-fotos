@@ -36,11 +36,14 @@ export default function PhotoCard({
           {onDelete && (
             <button
               type="button"
+              onPointerDown={(e) => e.stopPropagation()}
+              onTouchStart={(e) => e.stopPropagation()}
               onClick={(e) => {
+                e.preventDefault();
                 e.stopPropagation();
                 onDelete?.(photo);
               }}
-              className="text-red-600 hover:text-red-800 text-sm touch-manipulation"
+              className="text-red-600 hover:text-red-800 text-sm touch-manipulation relative z-20"
             >
               Eliminar
             </button>

@@ -174,6 +174,8 @@ export default function PhotoGallery({
 
         <button
           type="button"
+          onPointerDown={(e) => e.stopPropagation()}
+          onTouchStart={(e) => e.stopPropagation()}
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -190,7 +192,7 @@ export default function PhotoGallery({
             select-none
             min-h-12
             min-w-32
-            relative z-10
+            relative z-20
           "
         >
           Añadir foto
