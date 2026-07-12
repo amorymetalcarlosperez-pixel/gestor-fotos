@@ -1,6 +1,62 @@
 import { createPortal } from "react-dom";
 import CameraCapture from "./CameraCapture";
+import { useEffect, useRef } from "react";
 
+function MobileCameraInput({
+
+  onCapture,
+  onClose,
+
+}: {
+
+  onCapture: (file: File) => Promise<void>;
+  onClose: () => void;
+
+}) {
+
+  const inputRef =
+    useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+
+    inputRef.current?.click();
+
+  }, []);
+
+  return (
+
+    <input
+
+      ref={inputRef}
+
+      type="file"
+
+      accept="image/*"
+
+      capture="environment"
+
+      style={{ display: "none" }}
+
+      onChange={async (e) => {
+
+        const file =
+          e.target.files?.[0];
+
+        if (file) {
+
+          await onCapture(file);
+
+        }
+
+        onClose();
+
+      }}
+
+    />
+
+  );
+
+}
 type Props = {
   open: boolean;
   onClose: () => void;
@@ -27,35 +83,18 @@ export default function CameraDialog({
 
   if (esMovil) {
 
-    return createPortal(
+  return createPortal(
 
-      <input
-        autoFocus
-        type="file"
-        accept="image/*"
-        capture="environment"
-        style={{ display: "none" }}
-        onChange={async (e) => {
+    <MobileCameraInput
+      onCapture={onCapture}
+      onClose={onClose}
+    />,
 
-          const file =
-            e.target.files?.[0];
+    document.body
 
-          if (file) {
+  );
 
-            await onCapture(file);
-
-          }
-
-          onClose();
-
-        }}
-      />,
-
-      document.body
-
-    );
-
-  }
+}
 
   //----------------------------------------
   // PC → Webcam

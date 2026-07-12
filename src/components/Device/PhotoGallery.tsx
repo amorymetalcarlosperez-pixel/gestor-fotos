@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-
+import { useRef } from "react";
 import {
   addPhoto,
   getPhotoSignedUrl,
@@ -8,10 +8,15 @@ import {
   type DevicePhoto,
 } from "../../services/photos";
 
-import Card from "../ui/Card";
 import PhotoCard from "./PhotoCard";
 import CameraDialog from "./CameraDialog";
+const esMovil =
+  /Android|iPhone|iPad|iPod/i.test(
+    navigator.userAgent
+  );
 
+const inputRef =
+  useRef<HTMLInputElement>(null);
 type Props = {
   projectId: string;
   deviceId: string;
@@ -154,7 +159,7 @@ export default function PhotoGallery({
 
   return (
 
-    <Card className="mt-6">
+    <div className="mt-6 bg-white rounded-3xl p-5 shadow border border-slate-100">
 
       <div className="flex justify-between items-center mb-5">
 
@@ -175,33 +180,55 @@ export default function PhotoGallery({
         </div>
 
         <button
+  type="button"
+  onClick={() => {
 
-          type="button"
+    if (esMovil) {
 
-          onClick={() =>
-            setCameraOpen(true)
-          }
+      inputRef.current?.click();
 
-          disabled={saving}
+    } else {
 
-          className="
-            rounded-2xl
-            bg-slate-900
-            text-white
-            px-5
-            py-3
-            hover:bg-black
-            transition
-            disabled:opacity-50
-          "
+      setCameraOpen(true);
 
-        >
+    }
 
-          {saving
-            ? "Guardando..."
-            : "Añadir foto"}
+  }}
+  disabled={saving}
+  className="
+    rounded-2xl
+    bg-slate-900
+    text-white
+    px-5
+    py-3
+    hover:bg-black
+    transition
+    disabled:opacity-50
+  "
+>
+  {saving ? "Guardando..." : "Añadir foto"}
+</button>
 
-        </button>
+<input
+  ref={inputRef}
+  type="file"
+  accept="image/*"
+  capture="environment"
+  style={{ display: "none" }}
+  onChange={async (e) => {
+
+    const file = e.target.files?.[0];
+
+    if (file) {
+
+      await capturar(file);
+
+    }
+
+    e.target.value = "";
+
+  }}
+/>
 
       </div>
 
@@ -257,7 +284,7 @@ export default function PhotoGallery({
 
       />
 
-    </Card>
+    </div>
 
   );
 
