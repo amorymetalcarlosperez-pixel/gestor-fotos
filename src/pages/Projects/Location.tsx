@@ -176,48 +176,66 @@ export default function Location() {
     >
 
       {(category === "AUTOSERVICIO"
-  ? lista.slice(0, 1)
-  : lista
-).map(device => (
+        ? lista.slice(0, 1)
+        : lista
+      ).map(device => (
 
-  <Card
-    key={device.id}
-    onClick={() =>
-      navigate(
-        `/projects/${projectId}/${category}/${encodeURIComponent(location!)}/${device.id}`
-      )
-    }
-  >
+        <Card
+          key={device.id}
+          onClick={() =>
+            navigate(
+              `/projects/${projectId}/${category}/${encodeURIComponent(location!)}/${device.id}`
+            )
+          }
+        >
 
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-start">
 
-            <div>
+            <div className="flex-1">
 
-              <div className="text-xl font-semibold">
-  {category === "AUTOSERVICIO"
-    ? decodeURIComponent(location!)
-    : device.nombre_zip}
-</div>
+              <div className="text-xl font-semibold text-white">
 
-<div className="text-slate-500 mt-1">
-  {category === "AUTOSERVICIO"
-    ? `${lista.length} dispositivos`
-    : device.display_name}
-</div>
+                {category === "AUTOSERVICIO"
+                  ? decodeURIComponent(location!)
+                  : device.nombre_zip}
 
-              {device.serial_number && (
+              </div>
 
-                <div className="text-sm text-slate-400 mt-2">
+              <div className="mt-1 text-slate-400">
 
-                  S/N {device.serial_number}
+                {category === "AUTOSERVICIO"
+                  ? `${lista.length} dispositivos`
+                  : device.display_name}
 
-                </div>
+              </div>
 
-              )}
+              <div className="mt-3 text-sm text-slate-300">
+
+                <strong>Asset:</strong>{" "}
+                {device.asset_tag_actual ||
+                  device.asset_tag ||
+                  "-"}
+
+              </div>
+
+              <div className="text-sm text-slate-300">
+
+                <strong>S/N:</strong>{" "}
+                {device.serial_number_actual ||
+                  device.serial_number ||
+                  "-"}
+
+              </div>
 
             </div>
 
-            <Status completed={false} />
+            <Status
+              completed={
+                Array.isArray(device.device_status)
+                  ? (device.device_status[0]?.finalizado ?? false)
+                  : (device.device_status?.finalizado ?? false)
+              }
+            />
 
           </div>
 
