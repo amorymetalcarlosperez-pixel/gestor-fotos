@@ -472,8 +472,8 @@ async function actualizarEstado() {
           onReopen={reabrir}
 
         />
-
     </div>
+
 
     <div className="mt-8">
 
@@ -491,7 +491,13 @@ async function actualizarEstado() {
   deviceId={photoDevice!.id}
   carpeta="DESPUES"
   onChanged={actualizarEstado}
-/>
+  />
+  <PhotoGallery
+  projectId={projectId!}
+  deviceId={photoDevice!.id}
+  carpeta="DESPUES"
+  onChanged={actualizarEstado}
+  />
 
     <ScannerDialog
 
