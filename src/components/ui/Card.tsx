@@ -21,9 +21,7 @@ export default function Card({
         shadow-sm
         border
         border-slate-100
-        active:scale-[0.98]
-        transition-all
-        duration-150
+        transition
         ${onClick ? "cursor-pointer hover:shadow-md" : ""}
         ${className}
       `}
