@@ -202,6 +202,12 @@ export default function PhotoGallery({
         </button>
       </div>
 
+      <div className="mb-5">
+        <div className="text-sm text-slate-500">
+          Añade una foto desde aquí
+        </div>
+      </div>
+
       {photos.length === 0 ? (
 
         <div className="rounded-2xl border-2 border-dashed border-slate-300 p-10 text-center">
