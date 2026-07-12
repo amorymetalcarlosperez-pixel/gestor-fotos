@@ -172,6 +172,9 @@ export default function PhotoGallery({
 
         </div>
 
+      </div>
+
+      <div className="mb-5">
         <button
           type="button"
           onPointerDown={(e) => e.stopPropagation()}
@@ -183,6 +186,7 @@ export default function PhotoGallery({
           }}
           disabled={saving}
           className="
+            w-full
             rounded-2xl
             bg-slate-900
             text-white
@@ -191,13 +195,11 @@ export default function PhotoGallery({
             touch-manipulation
             select-none
             min-h-12
-            min-w-32
             relative z-20
           "
         >
           Añadir foto
         </button>
-
       </div>
 
       {photos.length === 0 ? (
