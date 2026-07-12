@@ -7,6 +7,7 @@ import DeviceHeader from "../../components/Device/DeviceHeader";
 import DeviceResume from "../../components/Device/DeviceResume";
 import DeviceActions from "../../components/Device/DeviceActions";
 import DeviceNavigation from "../../components/Device/DeviceNavigation";
+import MoveDeviceDialog from "../../components/Device/MoveDeviceDialog";
 import Card from "../../components/ui/Card";
 import {
   getProjectDevice,
@@ -14,6 +15,7 @@ import {
   getPreviousDevice,
   getDevicesByLocation,
   updateAssetTagActual,
+  moveDevice,
   type ProjectDevice,
 } from "../../services/projectDevices";
 import { updateComments } from "../../services/projectDevices";
@@ -53,6 +55,8 @@ const photoDevice =
 
   const [scannerOpen, setScannerOpen] =
     useState(false);
+    const [moveOpen, setMoveOpen] =
+  useState(false);
   const [comments, setComments] =
     useState("");
   const [activePhotoSection, setActivePhotoSection] =
@@ -198,7 +202,27 @@ ${codigo}
   if (!device)
     return;
 
-  await finishDevice(device.id);
+  //----------------------------------
+  // Si es un puesto o un autoservicio,
+  // finalizar todos los dispositivos
+  //----------------------------------
+
+  if (
+    device.device_group === "PUESTOS" ||
+    device.device_group === "AUTOSERVICIO"
+  ) {
+
+    for (const d of puestoDevices) {
+
+      await finishDevice(d.id);
+
+    }
+
+  } else {
+
+    await finishDevice(device.id);
+
+  }
 
   //----------------------------------
   // SOLO LOS PUESTOS continúan
@@ -217,11 +241,9 @@ ${codigo}
     if (siguiente) {
 
       navigate(
-
         `/projects/${projectId}/${category}/${encodeURIComponent(
           device.ubicacion_zip
         )}/${siguiente.id}`
-
       );
 
       return;
@@ -232,7 +254,6 @@ ${codigo}
 
   //----------------------------------
   // Resto de dispositivos
-  // (o último componente del puesto)
   //----------------------------------
 
   navigate(`/projects/${projectId}`);
@@ -301,6 +322,38 @@ ${codigo}
     );
 
   }
+  async function moverDispositivo(destino: {
+  folder_name: string;
+  nombre_zip: string;
+  ubicacion_zip: string;
+}) {
+
+  if (!device)
+    return;
+
+  await moveDevice(
+
+    device.id,
+
+    destino.folder_name,
+
+    destino.nombre_zip,
+
+    destino.ubicacion_zip
+
+  );
+
+  setMoveOpen(false);
+
+  navigate(
+
+    `/projects/${projectId}/${category}/${encodeURIComponent(
+      destino.ubicacion_zip
+    )}`
+
+  );
+
+}
 
   function abrirFotos(carpeta: "ANTES" | "DESPUES") {
     setActivePhotoSection(carpeta);
@@ -471,9 +524,31 @@ async function actualizarEstado() {
           onVerify={() => setScannerOpen(true)}
           onFinish={finalizar}
           onReopen={reabrir}
+          
           onAddBefore={() => abrirFotos("ANTES")}
           onAddAfter={() => abrirFotos("DESPUES")}
         />
+        <div className="mt-4">
+
+  <button
+
+    onClick={() => setMoveOpen(true)}
+
+    className="
+      w-full
+      rounded-2xl
+      btn-secondary
+      py-4
+      font-semibold
+    "
+
+  >
+
+    Mover dispositivo
+
+  </button>
+
+</div>
     </div>
 
 
@@ -528,6 +603,21 @@ async function actualizarEstado() {
       }}
 
     />
+    <MoveDeviceDialog
+
+  open={moveOpen}
+
+  projectId={projectId!}
+
+  deviceGroup={device.device_group}
+
+  currentFolder={device.folder_name}
+
+  onClose={() => setMoveOpen(false)}
+
+  onMove={moverDispositivo}
+
+/>
 <Card className="mt-8">
 
   <div className="font-semibold mb-3 text-white">

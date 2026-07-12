@@ -377,3 +377,49 @@ export async function updateComments(
     .eq("id", deviceId);
 
 }
+export async function moveDevice(
+  deviceId: string,
+  folderName: string,
+  nombreZip: string,
+  ubicacionZip: string
+) {
+
+  return await supabase
+
+    .from("project_devices")
+
+    .update({
+
+      folder_name: folderName,
+
+      nombre_zip: nombreZip,
+
+      ubicacion_zip: ubicacionZip,
+
+    })
+
+    .eq("id", deviceId);
+
+}
+export async function getMoveDestinations(
+  projectId: string,
+  deviceGroup: string
+) {
+
+  return await supabase
+
+    .from("project_devices")
+
+    .select(`
+      folder_name,
+      nombre_zip,
+      ubicacion_zip
+    `)
+
+    .eq("project_id", projectId)
+
+    .eq("device_group", deviceGroup)
+
+    .order("folder_name");
+
+}

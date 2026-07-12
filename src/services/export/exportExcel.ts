@@ -1,8 +1,9 @@
-import * as XLSX from "xlsx";
+import ExcelJS from "exceljs";
 
 import { supabase } from "../supabase";
 
 import { getProjectDevices } from "../projectDevices";
+
 
 export async function exportProjectExcel(
   projectId: string,
@@ -15,63 +16,74 @@ export async function exportProjectExcel(
 
   const { data, error } =
     await supabase.storage
-
       .from("inventory")
-
       .download(inventoryPath);
 
   if (error)
     throw error;
 
+
   const buffer =
     await data.arrayBuffer();
 
+
   //------------------------------------
-  // Abrir workbook
+  // Abrir Excel conservando formato
   //------------------------------------
 
   const workbook =
-    XLSX.read(buffer);
+    new ExcelJS.Workbook();
+
+
+  await workbook.xlsx.load(
+    buffer
+  );
+
 
   const sheet =
-    workbook.Sheets[
-      workbook.SheetNames[0]
-    ];
+    workbook.worksheets[0];
 
-  //------------------------------------
-  // Obtener todas las filas
-  //------------------------------------
 
-  const rows: any[][] =
-    XLSX.utils.sheet_to_json(
-      sheet,
-      {
-        header: 1,
-        defval: "",
-      }
-    );
-
-  if (!rows.length)
+  if (!sheet)
     throw new Error(
-      "Inventario vacío."
+      "No existe hoja de inventario."
     );
+
 
   //------------------------------------
-  // Localizar columnas
+  // Buscar cabeceras
   //------------------------------------
 
-  const header =
-    rows[0];
+  let assetColumn = -1;
+  let commentsColumn = -1;
 
-  const assetColumn =
-    header.indexOf(
-      "Asset tag"
-    );
 
-  const commentsColumn =
-    header.indexOf(
-      "Comments"
-    );
+  sheet.getRow(1).eachCell(
+    (cell, colNumber) => {
+
+      const value =
+        String(cell.value ?? "")
+          .trim();
+
+
+      if (value === "Asset tag") {
+
+        assetColumn =
+          colNumber;
+
+      }
+
+
+      if (value === "Comments") {
+
+        commentsColumn =
+          colNumber;
+
+      }
+
+    }
+  );
+
 
   if (
     assetColumn === -1 ||
@@ -84,8 +96,9 @@ export async function exportProjectExcel(
 
   }
 
+
   //------------------------------------
-  // Obtener dispositivos
+  // Obtener dispositivos modificados
   //------------------------------------
 
   const result =
@@ -93,108 +106,82 @@ export async function exportProjectExcel(
       projectId
     );
 
+
   if (result.error)
     throw result.error;
+
 
   const mapa =
     new Map();
 
-  (result.data ?? []).forEach(
-    (device) => {
+
+  (result.data ?? [])
+    .forEach(device => {
 
       mapa.set(
+
         String(
           device.asset_tag ?? ""
         ).trim(),
+
         device
+
       );
 
+    });
+
+
+
+  //------------------------------------
+  // Actualizar solo valores
+  // manteniendo formato
+  //------------------------------------
+
+  sheet.eachRow(
+    (row, rowNumber) => {
+
+      if (rowNumber === 1)
+        return;
+
+
+      const asset =
+        String(
+          row.getCell(assetColumn).value ?? ""
+        ).trim();
+
+
+      const device =
+        mapa.get(asset);
+
+
+      if (!device)
+        return;
+
+
+      row
+        .getCell(assetColumn)
+        .value =
+          device.asset_tag_actual ?? "";
+
+
+      row
+        .getCell(commentsColumn)
+        .value =
+          device.comments ?? "";
+
     }
   );
 
-  //------------------------------------
-  // Modificar celdas existentes
-  //------------------------------------
 
-  for (
-    let row = 1;
-    row < rows.length;
-    row++
-  ) {
-
-    const asset =
-      String(
-        rows[row][assetColumn] ?? ""
-      ).trim();
-
-    const device =
-      mapa.get(asset);
-
-    if (!device)
-      continue;
-
-    rows[row][assetColumn] =
-      device.asset_tag_actual ?? "";
-
-    rows[row][commentsColumn] =
-      device.comments ?? "";
-
-  }
 
   //------------------------------------
-  // Escribir únicamente las celdas
+  // Generar archivo
   //------------------------------------
 
-  for (
-    let r = 1;
-    r < rows.length;
-    r++
-  ) {
+  const salida =
+    await workbook.xlsx.writeBuffer();
 
-    const assetCell =
-      XLSX.utils.encode_cell({
 
-        r,
-
-        c: assetColumn,
-
-      });
-
-    const commentsCell =
-      XLSX.utils.encode_cell({
-
-        r,
-
-        c: commentsColumn,
-
-      });
-
-    sheet[assetCell] = {
-
-      t: "s",
-
-      v: rows[r][assetColumn],
-
-    };
-
-    sheet[commentsCell] = {
-
-      t: "s",
-
-      v: rows[r][commentsColumn],
-
-    };
-
-  }
-
-  //------------------------------------
-
-  return XLSX.write(
-    workbook,
-    {
-      type: "array",
-      bookType: "xlsx",
-    }
-  );
+  return salida;
 
 }
