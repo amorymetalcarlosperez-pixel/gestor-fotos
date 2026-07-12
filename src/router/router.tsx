@@ -1,5 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 
+const basename = "/gestor-fotos";
+
 import Login from "../pages/Login/Login";
 import Dashboard from "../pages/Dashboard/Dashboard";
 import ScanPage from "../pages/Scanner/ScanPage";
@@ -46,4 +48,6 @@ export const router = createBrowserRouter([
     path: "/projects/:projectId/:category/:location/:deviceId",
     element: <Device />,
   },
-]);
+], {
+  basename,
+});
