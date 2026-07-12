@@ -37,6 +37,20 @@ export default function PhotoGallery({
     useState(false);
 
   useEffect(() => {
+    const handleOpenCamera = () => {
+      if (!saving) {
+        setCameraOpen(true);
+      }
+    };
+
+    window.addEventListener("open-photo-camera", handleOpenCamera);
+
+    return () => {
+      window.removeEventListener("open-photo-camera", handleOpenCamera);
+    };
+  }, [saving]);
+
+  useEffect(() => {
 
     cargar();
 

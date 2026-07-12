@@ -13,7 +13,16 @@ export default function PhotoCard({
   onDelete,
 }: Props) {
   return (
-    <div className="bg-white rounded-xl shadow overflow-hidden select-none">
+    <div
+      className="bg-white rounded-xl shadow overflow-hidden select-none"
+      onPointerDown={(e) => e.stopPropagation()}
+      onTouchStart={(e) => e.stopPropagation()}
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        window.dispatchEvent(new CustomEvent("open-photo-camera"));
+      }}
+    >
 
       <img
         src={photo.url}
