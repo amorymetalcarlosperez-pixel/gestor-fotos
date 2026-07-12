@@ -9,8 +9,6 @@ import {
 import Page from "../../components/ui/Page";
 import Card from "../../components/ui/Card";
 import Status from "../../components/ui/Status";
-const [devices, setDevices] =
-  useState<ProjectDevice[]>([]);
 
 export default function Category() {
 
