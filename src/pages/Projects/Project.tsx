@@ -306,7 +306,7 @@ Esta acción NO se puede deshacer.
 
       <Card>
 
-        <div className="text-5xl font-bold">
+        <div className="text-5xl font-bold text-white">
 
           {progress?.porcentaje ?? 0}%
 
@@ -322,7 +322,7 @@ Esta acción NO se puede deshacer.
 
         </div>
 
-        <div className="mt-3 text-slate-500">
+        <div className="mt-3 text-slate-400">
 
           {progress?.finalizados ?? 0}
           {" / "}
@@ -337,13 +337,13 @@ Esta acción NO se puede deshacer.
         onClick={continuarInventario}
       >
 
-        <div className="text-xl font-semibold">
+        <div className="text-xl font-semibold text-white">
 
           Continuar inventario
 
         </div>
 
-        <div className="text-slate-500 mt-1">
+        <div className="text-slate-400 mt-1">
 
           Abrir el siguiente dispositivo pendiente
 
@@ -359,13 +359,13 @@ Esta acción NO se puede deshacer.
         }
       >
 
-        <div className="text-xl font-semibold">
+        <div className="text-xl font-semibold text-white">
 
           Escanear etiqueta
 
         </div>
 
-        <div className="text-slate-500 mt-1">
+        <div className="text-slate-400 mt-1">
 
           Buscar un dispositivo por Asset Tag
 
@@ -377,13 +377,13 @@ Esta acción NO se puede deshacer.
         onClick={finalizarProyecto}
       >
 
-        <div className="text-xl font-semibold">
+        <div className="text-xl font-semibold text-white">
 
           Finalizar proyecto
 
         </div>
 
-        <div className="text-slate-500 mt-1">
+        <div className="text-slate-400 mt-1">
 
           Generar la entrega del proyecto
 
@@ -394,13 +394,13 @@ Esta acción NO se puede deshacer.
   onClick={eliminarProyecto}
 >
 
-  <div className="text-xl font-semibold text-red-600">
+  <div className="text-xl font-semibold text-rose-400">
 
     Eliminar proyecto
 
   </div>
 
-  <div className="text-slate-500 mt-1">
+  <div className="text-slate-400 mt-1">
 
     Elimina completamente el proyecto
 
@@ -439,13 +439,13 @@ Esta acción NO se puede deshacer.
 
                 <div>
 
-                  <div className="text-xl font-semibold">
+                  <div className="text-xl font-semibold text-white">
 
                     {cat.nombre}
 
                   </div>
 
-                  <div className="text-slate-500 mt-1">
+                  <div className="text-slate-400 mt-1">
 
                     {cat.total} dispositivos
 
@@ -461,7 +461,7 @@ Esta acción NO se puede deshacer.
 
                   </div>
 
-                  <div className="text-sm text-slate-500">
+                  <div className="text-sm text-slate-400">
 
                     {info?.finalizados ?? 0}
                     {" / "}

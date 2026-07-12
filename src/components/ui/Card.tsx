@@ -17,12 +17,9 @@ export default function Card({
         onClick?.();
       }}
       className={`
-        bg-white
-        rounded-3xl
+        card-surface
+        rounded-[24px]
         p-5
-        shadow-sm
-        border
-        border-slate-100
         ${onClick ? "cursor-pointer" : ""}
         ${className}
       `}
