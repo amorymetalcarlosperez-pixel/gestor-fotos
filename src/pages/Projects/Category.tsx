@@ -1,17 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { getProjectDevices } from "../../services/projectDevices";
+import {
+  getProjectDevices,
+  type ProjectDevice,
+} from "../../services/projectDevices";
 
 import Page from "../../components/ui/Page";
 import Card from "../../components/ui/Card";
-import ProgressBar from "../../components/ui/ProgressBar";
-
-type Device = {
-  id: string;
-  device_group: string;
-  ubicacion_zip: string;
-};
+import Status from "../../components/ui/Status";
+const [devices, setDevices] =
+  useState<ProjectDevice[]>([]);
 
 export default function Category() {
 
@@ -23,7 +22,7 @@ export default function Category() {
   const navigate = useNavigate();
 
   const [devices, setDevices] =
-    useState<Device[]>([]);
+    useState<ProjectDevice[]>([]);
 
   const [loading, setLoading] =
     useState(true);
@@ -57,45 +56,67 @@ export default function Category() {
 
     }
 
-    setDevices((data as Device[]) ?? []);
+    setDevices((data as ProjectDevice[]) ?? []);
 
     setLoading(false);
 
   }
 
-  const ubicaciones =
-    useMemo(() => {
+  const ubicaciones = useMemo(() => {
 
-      const mapa: Record<string, number> = {};
+  const mapa = new Map<
+    string,
+    {
+      nombre: string;
+      total: number;
+      completed: boolean;
+      primerDispositivo: ProjectDevice;
+    }
+  >();
 
-      devices
-        .filter(
-          d => d.device_group === category
-        )
-        .forEach(d => {
+  devices
+    .filter(d => d.device_group === category)
+    .forEach(d => {
 
-          mapa[d.ubicacion_zip] =
-            (mapa[d.ubicacion_zip] ?? 0) + 1;
+      const estado = Array.isArray(d.device_status)
+        ? d.device_status[0]
+        : d.device_status;
 
+      const actual = mapa.get(d.ubicacion_zip);
+
+      if (!actual) {
+
+        mapa.set(d.ubicacion_zip, {
+          nombre: d.ubicacion_zip,
+          total: 1,
+          completed: estado?.finalizado ?? false,
+          primerDispositivo: d,
         });
 
-      return Object.entries(mapa)
-        .map(([nombre, total]) => ({
-          nombre,
-          total,
-        }))
-        .sort((a, b) =>
-          a.nombre.localeCompare(
-            b.nombre,
-            undefined,
-            {
-              numeric: true,
-              sensitivity: "base",
-            }
-          )
-        );
+      } else {
 
-    }, [devices, category]);
+        actual.total++;
+
+        actual.completed =
+          actual.completed &&
+          (estado?.finalizado ?? false);
+
+      }
+
+    });
+
+  return [...mapa.values()].sort((a, b) =>
+    a.nombre.localeCompare(
+      b.nombre,
+      undefined,
+      {
+        numeric: true,
+        sensitivity: "base",
+      }
+    )
+  );
+
+}, [devices, category]);
 
   if (loading) {
 
@@ -129,52 +150,60 @@ export default function Category() {
 
       {ubicaciones.map((u) => (
 
-        <Card
-          key={u.nombre}
-          onClick={() =>
-            navigate(
-              `/projects/${projectId}/${category}/${encodeURIComponent(
-                u.nombre
-              )}`
-            )
-          }
-        >
+  <Card
+    key={u.nombre}
+    onClick={() =>
+      navigate(
+        `/projects/${projectId}/${category}/${encodeURIComponent(
+          u.nombre
+        )}`
+      )
+    }
+  >
 
-          <div className="flex justify-between items-center">
+    <div className="flex justify-between items-start">
 
-            <div>
+      <div className="flex-1">
 
-              <div className="text-xl font-semibold">
+        <div className="text-xl font-semibold text-white">
 
-                {u.nombre}
+          {u.nombre}
 
-              </div>
+        </div>
 
-              <div className="text-slate-500 mt-1">
+        <div className="mt-1 text-slate-400">
 
-                {u.total} dispositivos
+          {u.total} dispositivos
 
-              </div>
+        </div>
 
-            </div>
+        <div className="mt-3 text-sm text-slate-300">
 
-            <div className="w-24">
+          <strong>Asset:</strong>{" "}
+          {u.primerDispositivo.asset_tag_actual ||
+            u.primerDispositivo.asset_tag ||
+            "-"}
 
-              <ProgressBar value={0} />
+        </div>
 
-              <div className="text-center mt-2 text-sm font-semibold">
+        <div className="text-sm text-slate-300">
 
-                0%
+          <strong>S/N:</strong>{" "}
+          {u.primerDispositivo.serial_number_actual ||
+            u.primerDispositivo.serial_number ||
+            "-"}
 
-              </div>
+        </div>
 
-            </div>
+      </div>
 
-          </div>
+      <Status completed={u.completed} />
 
-        </Card>
+    </div>
 
-      ))}
+  </Card>
+
+))}
 
     </Page>
 
