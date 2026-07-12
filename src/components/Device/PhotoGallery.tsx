@@ -38,6 +38,7 @@ export default function PhotoGallery({
 
   useEffect(() => {
     const handleOpenCamera = () => {
+      console.log("[PhotoGallery] open-photo-camera received");
       if (!saving) {
         setCameraOpen(true);
       }
@@ -196,6 +197,7 @@ export default function PhotoGallery({
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
+            console.log("[PhotoGallery] button clicked");
             setCameraOpen(true);
           }}
           disabled={saving}
@@ -219,6 +221,9 @@ export default function PhotoGallery({
       <div className="mb-5">
         <div className="text-sm text-slate-500">
           Añade una foto desde aquí
+        </div>
+        <div className="mt-2 rounded-xl border border-dashed border-slate-300 p-3 text-center text-sm text-slate-600">
+          {saving ? "Procesando..." : "Toca aquí para abrir la cámara"}
         </div>
       </div>
 
