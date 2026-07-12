@@ -1,6 +1,6 @@
 import { createPortal } from "react-dom";
 import CameraCapture from "./CameraCapture";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 function MobileCameraInput({
 
@@ -17,11 +17,18 @@ function MobileCameraInput({
   const inputRef =
     useRef<HTMLInputElement>(null);
 
+  const [isOpen, setIsOpen] = useState(false);
+
   useEffect(() => {
+
+    if (!isOpen) {
+      return;
+    }
 
     const input = inputRef.current;
 
     if (!input) {
+      setIsOpen(false);
       onClose();
       return;
     }
@@ -34,6 +41,7 @@ function MobileCameraInput({
         await onCapture(file);
       }
 
+      setIsOpen(false);
       onClose();
     };
 
@@ -44,24 +52,25 @@ function MobileCameraInput({
       input.removeEventListener("change", handleChange);
     };
 
-  }, [onCapture, onClose]);
+  }, [isOpen, onCapture, onClose]);
 
   return (
-
-    <input
-
-      ref={inputRef}
-
-      type="file"
-
-      accept="image/*"
-
-      capture="environment"
-
-      style={{ display: "none" }}
-
-    />
-
+    <>
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        style={{ display: "none" }}
+      />
+      <button
+        type="button"
+        onClick={() => setIsOpen(true)}
+        className="mb-3 w-full rounded-xl bg-slate-900 px-4 py-3 text-white"
+      >
+        Elegir foto o cámara
+      </button>
+    </>
   );
 
 }
