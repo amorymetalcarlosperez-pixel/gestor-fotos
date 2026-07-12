@@ -13,7 +13,7 @@ export default function PhotoCard({
   onDelete,
 }: Props) {
   return (
-    <div className="bg-white rounded-xl shadow overflow-hidden">
+    <div className="bg-white rounded-xl shadow overflow-hidden select-none">
 
       <img
         src={photo.url}
@@ -35,8 +35,12 @@ export default function PhotoCard({
 
           {onDelete && (
             <button
-              onClick={() => onDelete(photo)}
-              className="text-red-600 hover:text-red-800 text-sm"
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete?.(photo);
+              }}
+              className="text-red-600 hover:text-red-800 text-sm touch-manipulation"
             >
               Eliminar
             </button>

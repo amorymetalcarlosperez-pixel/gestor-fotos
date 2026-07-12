@@ -152,7 +152,7 @@ export default function PhotoGallery({
 
   return (
 
-    <div className="mt-6 bg-white rounded-3xl p-5 shadow border border-slate-100">
+    <div className="mt-6 bg-white rounded-3xl p-5 shadow border border-slate-100 relative">
 
       <div className="flex justify-between items-center mb-5">
 
