@@ -285,7 +285,7 @@ Esta acción NO se puede deshacer.
         subtitle="Cargando..."
       >
 
-        <div className="text-slate-500">
+        <div className="text-slate-400">
 
           Cargando inventario...
 
@@ -455,7 +455,7 @@ Esta acción NO se puede deshacer.
 
                 <div className="text-right">
 
-                  <div className="font-bold">
+                  <div className="font-bold text-white">
 
                     {info?.porcentaje ?? 0}%
 

@@ -32,49 +32,51 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-100">
+    <div className="min-h-screen flex items-center justify-center bg-transparent px-4">
       <form
         onSubmit={iniciarSesion}
-        className="bg-white shadow-xl rounded-xl p-8 w-full max-w-sm"
+        className="glass-panel rounded-[28px] p-8 w-full max-w-sm shadow-2xl"
       >
-        <h1 className="text-3xl font-bold text-center">
+        <h1 className="text-3xl font-bold text-center text-white">
           Gestor de Proyectos
         </h1>
 
-        <p className="text-center text-gray-500 mb-6">
+        <p className="text-center text-slate-400 mb-6">
           Iniciar sesión
         </p>
 
         <div className="mb-4">
-          <label className="block mb-1 font-medium">
+          <label className="block mb-2 font-medium text-slate-200">
             Email
           </label>
 
           <input
             type="email"
-            className="w-full border rounded-lg p-3"
+            className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none placeholder:text-slate-500"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            placeholder="tu@email.com"
             required
           />
         </div>
 
         <div className="mb-6">
-          <label className="block mb-1 font-medium">
+          <label className="block mb-2 font-medium text-slate-200">
             Contraseña
           </label>
 
           <input
             type="password"
-            className="w-full border rounded-lg p-3"
+            className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none placeholder:text-slate-500"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            placeholder="••••••••"
             required
           />
         </div>
 
         {mensaje && (
-          <div className="mb-4 text-red-600 text-center">
+          <div className="mb-4 text-rose-400 text-center">
             {mensaje}
           </div>
         )}
@@ -82,7 +84,7 @@ export default function Login() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-blue-600 text-white rounded-lg py-3 hover:bg-blue-700 disabled:opacity-50"
+          className="w-full rounded-2xl btn-spotify py-3 font-semibold text-white disabled:opacity-50"
         >
           {loading ? "Entrando..." : "Iniciar sesión"}
         </button>

@@ -9,8 +9,8 @@ export default function Status({
     <div
       className={
         completed
-          ? "rounded-full bg-emerald-100 text-emerald-700 px-3 py-1 text-sm font-semibold"
-          : "rounded-full bg-slate-200 text-slate-600 px-3 py-1 text-sm font-semibold"
+          ? "rounded-full bg-emerald-500/20 text-emerald-300 px-3 py-1 text-sm font-semibold border border-emerald-400/20"
+          : "rounded-full bg-slate-700/70 text-slate-300 px-3 py-1 text-sm font-semibold border border-white/10"
       }
     >
       {completed ? "Completado" : "Pendiente"}

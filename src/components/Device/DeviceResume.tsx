@@ -13,81 +13,33 @@ export default function DeviceResume({
 }: Props) {
 
   return (
-
     <div className="grid grid-cols-2 gap-4">
-
-      <div className="rounded-3xl bg-white p-5 shadow-sm">
-
-        <div className="text-sm text-slate-500">
-          Antes
-        </div>
-
-        <div className="mt-2 text-4xl font-bold">
-          {fotosAntes}
-        </div>
-
-        <div className="text-sm text-slate-400">
-          fotografías
-        </div>
-
+      <div className="card-surface rounded-[24px] p-5">
+        <div className="text-sm text-slate-400">Antes</div>
+        <div className="mt-2 text-4xl font-bold text-white">{fotosAntes}</div>
+        <div className="text-sm text-slate-500">fotografías</div>
       </div>
 
-      <div className="rounded-3xl bg-white p-5 shadow-sm">
-
-        <div className="text-sm text-slate-500">
-          Después
-        </div>
-
-        <div className="mt-2 text-4xl font-bold">
-          {fotosDespues}
-        </div>
-
-        <div className="text-sm text-slate-400">
-          fotografías
-        </div>
-
+      <div className="card-surface rounded-[24px] p-5">
+        <div className="text-sm text-slate-400">Después</div>
+        <div className="mt-2 text-4xl font-bold text-white">{fotosDespues}</div>
+        <div className="text-sm text-slate-500">fotografías</div>
       </div>
 
-      <div className="rounded-3xl bg-white p-5 shadow-sm">
-
-        <div className="text-sm text-slate-500">
-          Modificado
+      <div className="card-surface rounded-[24px] p-5">
+        <div className="text-sm text-slate-400">Modificado</div>
+        <div className="mt-2 text-xl font-semibold text-white">
+          {modificado ? "Sí" : "No"}
         </div>
-
-        <div className="mt-2 text-xl font-semibold">
-
-          {modificado
-            ? "Sí"
-            : "No"}
-
-        </div>
-
       </div>
 
-      <div className="rounded-3xl bg-white p-5 shadow-sm">
-
-        <div className="text-sm text-slate-500">
-          Estado
+      <div className="card-surface rounded-[24px] p-5">
+        <div className="text-sm text-slate-400">Estado</div>
+        <div className={`mt-2 text-xl font-semibold ${finalizado ? "text-emerald-400" : "text-amber-400"}`}>
+          {finalizado ? "Finalizado" : "Pendiente"}
         </div>
-
-        <div
-          className={`mt-2 text-xl font-semibold ${
-            finalizado
-              ? "text-green-600"
-              : "text-orange-500"
-          }`}
-        >
-
-          {finalizado
-            ? "Finalizado"
-            : "Pendiente"}
-
-        </div>
-
       </div>
-
     </div>
-
   );
 
 }

@@ -405,7 +405,7 @@ async function actualizarEstado() {
 
   <Card className="mt-6">
 
-    <div className="text-lg font-semibold mb-4">
+    <div className="text-lg font-semibold mb-4 text-white">
 
       Dispositivos del autoservicio
 
@@ -422,13 +422,13 @@ async function actualizarEstado() {
 
           <div>
 
-            <div className="font-semibold">
+            <div className="font-semibold text-white">
 
               {d.device_type}
 
             </div>
 
-            <div className="text-sm text-slate-500">
+            <div className="text-sm text-slate-400">
 
               {d.display_name}
 
@@ -530,7 +530,7 @@ async function actualizarEstado() {
     />
 <Card className="mt-8">
 
-  <div className="font-semibold mb-3">
+  <div className="font-semibold mb-3 text-white">
 
     Observaciones
 
@@ -548,11 +548,14 @@ async function actualizarEstado() {
 
     className="
       w-full
-      rounded-xl
+      rounded-2xl
       border
-      border-slate-300
+      border-white/10
+      bg-slate-950/60
+      text-white
       p-4
       resize-none
+      placeholder:text-slate-500
       focus:outline-none
       focus:ring-2
       focus:ring-blue-500
