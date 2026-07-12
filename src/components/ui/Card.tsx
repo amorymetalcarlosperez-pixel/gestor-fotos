@@ -13,7 +13,9 @@ export default function Card({
 }: Props) {
   return (
     <div
-      onClick={onClick}
+      onClick={() => {
+        onClick?.();
+      }}
       className={`
         bg-white
         rounded-3xl
@@ -21,8 +23,7 @@ export default function Card({
         shadow-sm
         border
         border-slate-100
-        transition
-        ${onClick ? "cursor-pointer hover:shadow-md" : ""}
+        ${onClick ? "cursor-pointer" : ""}
         ${className}
       `}
     >

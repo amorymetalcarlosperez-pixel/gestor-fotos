@@ -182,17 +182,11 @@ export default function PhotoGallery({
         <button
   type="button"
   onClick={() => {
-
     if (esMovil) {
-
       inputRef.current?.click();
-
     } else {
-
       setCameraOpen(true);
-
     }
-
   }}
   disabled={saving}
   className="
@@ -201,12 +195,9 @@ export default function PhotoGallery({
     text-white
     px-5
     py-3
-    hover:bg-black
-    transition
-    disabled:opacity-50
   "
 >
-  {saving ? "Guardando..." : "Añadir foto"}
+  Añadir foto
 </button>
 
 <input
