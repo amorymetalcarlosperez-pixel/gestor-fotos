@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useRef } from "react";
 import {
   addPhoto,
   getPhotoSignedUrl,
@@ -10,13 +9,7 @@ import {
 
 import PhotoCard from "./PhotoCard";
 import CameraDialog from "./CameraDialog";
-const esMovil =
-  /Android|iPhone|iPad|iPod/i.test(
-    navigator.userAgent
-  );
 
-const inputRef =
-  useRef<HTMLInputElement>(null);
 type Props = {
   projectId: string;
   deviceId: string;
@@ -180,46 +173,22 @@ export default function PhotoGallery({
         </div>
 
         <button
-  type="button"
-  onClick={() => {
-    if (esMovil) {
-      inputRef.current?.click();
-    } else {
-      setCameraOpen(true);
-    }
-  }}
-  disabled={saving}
-  className="
-    rounded-2xl
-    bg-slate-900
-    text-white
-    px-5
-    py-3
-  "
->
-  Añadir foto
-</button>
-
-<input
-  ref={inputRef}
-  type="file"
-  accept="image/*"
-  capture="environment"
-  style={{ display: "none" }}
-  onChange={async (e) => {
-
-    const file = e.target.files?.[0];
-
-    if (file) {
-
-      await capturar(file);
-
-    }
-
-    e.target.value = "";
-
-  }}
-/>
+          type="button"
+          onClick={() => {
+            setCameraOpen(true);
+          }}
+          disabled={saving}
+          className="
+            rounded-2xl
+            bg-slate-900
+            text-white
+            px-5
+            py-3
+            touch-manipulation
+          "
+        >
+          Añadir foto
+        </button>
 
       </div>
 
