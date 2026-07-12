@@ -61,7 +61,7 @@ function MobileCameraInput({
         type="file"
         accept="image/*"
         capture="environment"
-        style={{ display: "none" }}
+        className="mb-3 w-full rounded-xl border border-slate-300 p-3"
       />
       <button
         type="button"
