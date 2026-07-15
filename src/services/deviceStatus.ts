@@ -70,16 +70,20 @@ export async function getDeviceStatus(
 export async function ensureDeviceStatus(
   projectId: string,
   projectDeviceId: string
+  
 ) {
 
   //--------------------------------------
   // ¿Ya existe?
   //--------------------------------------
 
-  const existente =
-    await getDeviceStatus(
-      projectDeviceId
-    );
+  
+
+const existente =
+  await getDeviceStatus(projectDeviceId);
+
+console.log("existente:", existente.data);
+console.log("error:", existente.error);
 
   if (existente.error) {
 
@@ -109,7 +113,7 @@ export async function ensureDeviceStatus(
   //--------------------------------------
   // Crear estado
   //--------------------------------------
-
+console.log("VOY A INSERTAR");
   const insert =
     await supabase
 

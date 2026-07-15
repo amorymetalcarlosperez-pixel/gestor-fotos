@@ -1,9 +1,7 @@
-import ExcelJS from "exceljs";
+import XlsxPopulate from "xlsx-populate";
 
 import { supabase } from "../supabase";
-
 import { getProjectDevices } from "../projectDevices";
-
 
 export async function exportProjectExcel(
   projectId: string,
@@ -11,7 +9,7 @@ export async function exportProjectExcel(
 ) {
 
   //------------------------------------
-  // Descargar Excel original
+  // Descargar plantilla
   //------------------------------------
 
   const { data, error } =
@@ -22,68 +20,54 @@ export async function exportProjectExcel(
   if (error)
     throw error;
 
-
   const buffer =
     await data.arrayBuffer();
 
-
   //------------------------------------
-  // Abrir Excel conservando formato
+  // Abrir Excel SIN modificar formato
   //------------------------------------
 
   const workbook =
-    new ExcelJS.Workbook();
-
-
-  await workbook.xlsx.load(
-    buffer
-  );
-
+    await XlsxPopulate.fromDataAsync(buffer);
 
   const sheet =
-    workbook.worksheets[0];
-
-
-  if (!sheet)
-    throw new Error(
-      "No existe hoja de inventario."
-    );
-
+    workbook.sheet(0);
 
   //------------------------------------
   // Buscar cabeceras
   //------------------------------------
 
+  const headerRow = 1;
+
   let assetColumn = -1;
   let commentsColumn = -1;
 
+  const usedRange =
+    sheet.usedRange();
 
-  sheet.getRow(1).eachCell(
-    (cell, colNumber) => {
+  const totalColumns =
+    usedRange.endCell().columnNumber();
 
-      const value =
-        String(cell.value ?? "")
-          .trim();
+  for (
+    let col = 1;
+    col <= totalColumns;
+    col++
+  ) {
 
+    const value =
+      String(
+        sheet
+          .cell(headerRow, col)
+          .value() ?? ""
+      ).trim();
 
-      if (value === "Asset tag") {
+    if (value === "Asset tag")
+      assetColumn = col;
 
-        assetColumn =
-          colNumber;
+    if (value === "Comments")
+      commentsColumn = col;
 
-      }
-
-
-      if (value === "Comments") {
-
-        commentsColumn =
-          colNumber;
-
-      }
-
-    }
-  );
-
+  }
 
   if (
     assetColumn === -1 ||
@@ -91,97 +75,96 @@ export async function exportProjectExcel(
   ) {
 
     throw new Error(
-      "No se encuentran las columnas Asset tag o Comments."
+      "No se encontraron las columnas Asset tag y Comments."
     );
 
   }
 
-
   //------------------------------------
-  // Obtener dispositivos modificados
+  // Obtener inventario
   //------------------------------------
 
   const result =
-    await getProjectDevices(
-      projectId
-    );
-
+    await getProjectDevices(projectId);
 
   if (result.error)
     throw result.error;
 
-
   const mapa =
-    new Map();
+    new Map<string, any>();
 
+  (result.data ?? []).forEach(device => {
 
-  (result.data ?? [])
-    .forEach(device => {
+    if (device.asset_tag) {
 
       mapa.set(
-
-        String(
-          device.asset_tag ?? ""
-        ).trim(),
-
+        device.asset_tag.trim(),
         device
-
       );
 
-    });
+    }
 
+    if (device.asset_tag_actual) {
 
-
-  //------------------------------------
-  // Actualizar solo valores
-  // manteniendo formato
-  //------------------------------------
-
-  sheet.eachRow(
-    (row, rowNumber) => {
-
-      if (rowNumber === 1)
-        return;
-
-
-      const asset =
-        String(
-          row.getCell(assetColumn).value ?? ""
-        ).trim();
-
-
-      const device =
-        mapa.get(asset);
-
-
-      if (!device)
-        return;
-
-
-      row
-        .getCell(assetColumn)
-        .value =
-          device.asset_tag_actual ?? "";
-
-
-      row
-        .getCell(commentsColumn)
-        .value =
-          device.comments ?? "";
+      mapa.set(
+        device.asset_tag_actual.trim(),
+        device
+      );
 
     }
-  );
 
-
+  });
 
   //------------------------------------
-  // Generar archivo
+  // Recorrer filas
   //------------------------------------
 
-  const salida =
-    await workbook.xlsx.writeBuffer();
+  const totalRows =
+    usedRange.endCell().rowNumber();
 
+  for (
+    let row = 2;
+    row <= totalRows;
+    row++
+  ) {
 
-  return salida;
+    const assetOriginal =
+      String(
+        sheet
+          .cell(row, assetColumn)
+          .value() ?? ""
+      ).trim();
+
+    const device =
+      mapa.get(assetOriginal);
+
+    if (!device)
+      continue;
+
+    //------------------------------------
+    // SOLO cambiar valores
+    //------------------------------------
+
+    sheet
+      .cell(row, assetColumn)
+      .value(
+        device.asset_tag_actual ??
+        device.asset_tag ??
+        ""
+      );
+
+    sheet
+      .cell(row, commentsColumn)
+      .value(
+        device.comments ?? ""
+      );
+
+  }
+
+  //------------------------------------
+  // Devolver EXACTAMENTE el mismo libro
+  //------------------------------------
+
+  return await workbook.outputAsync();
 
 }
