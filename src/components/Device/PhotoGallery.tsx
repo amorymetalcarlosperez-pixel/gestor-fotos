@@ -119,29 +119,39 @@ export default function PhotoGallery({
 
   }
 
-  async function capturar(file: File) {
+ async function capturar(file: File) {
 
-    if (saving)
-      return;
+  if (saving)
+    return;
 
-    setSaving(true);
+  //----------------------------------------
+  // Cerrar la cámara inmediatamente
+  //----------------------------------------
 
-    try {
+  setCameraOpen(false);
 
-      await addPhoto(
-        projectId,
-        deviceId,
-        carpeta,
-        file
-      );
+  setSaving(true);
+
+  //----------------------------------------
+  // Subida en segundo plano
+  //----------------------------------------
+
+  addPhoto(
+    projectId,
+    deviceId,
+    carpeta,
+    file
+  )
+
+    .then(async () => {
 
       await cargar();
 
       onChanged?.();
 
-    }
+    })
 
-    catch (error) {
+    .catch(error => {
 
       console.error(error);
 
@@ -149,17 +159,15 @@ export default function PhotoGallery({
         "Error al guardar la fotografía."
       );
 
-    }
+    })
 
-    finally {
+    .finally(() => {
 
       setSaving(false);
 
-      setCameraOpen(false);
+    });
 
-    }
-
-  }
+}
 
   async function borrar(
     photo: DevicePhoto
