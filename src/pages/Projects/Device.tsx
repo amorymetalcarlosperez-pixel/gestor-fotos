@@ -8,6 +8,7 @@ import DeviceResume from "../../components/Device/DeviceResume";
 import DeviceActions from "../../components/Device/DeviceActions";
 import DeviceNavigation from "../../components/Device/DeviceNavigation";
 import MoveDeviceDialog from "../../components/Device/MoveDeviceDialog";
+import ShareZipDialog from "../../components/Device/ShareZipDialog";
 import { shareZip } from "../../services/shareZip";
 import Card from "../../components/ui/Card";
 import {
@@ -62,6 +63,11 @@ const photoDevice =
     useState("");
   const [activePhotoSection, setActivePhotoSection] =
     useState<"ANTES" | "DESPUES" | null>(null);
+    const [shareDialogOpen, setShareDialogOpen] =
+  useState(false);
+
+  const [nextRoute, setNextRoute] =
+  useState("");
 
   useEffect(() => {
 
@@ -227,30 +233,11 @@ async function finalizar() {
   }
 
   //----------------------------------
-  // Compartir ZIP (de momento de prueba)
+  // Calcular siguiente pantalla
   //----------------------------------
 
-  try {
-
-    await shareZip(
-              //device.display_name || "Dispositivo"
-    );
-
-  }
-
-  catch (error) {
-
-    console.error(
-      "Error compartiendo ZIP",
-      error
-    );
-
-  }
-
-  //----------------------------------
-  // SOLO LOS PUESTOS continúan
-  // con el siguiente dispositivo
-  //----------------------------------
+  let destino =
+    `/projects/${projectId}`;
 
   if (device.device_group === "PUESTOS") {
 
@@ -263,23 +250,49 @@ async function finalizar() {
 
     if (siguiente) {
 
-      navigate(
+      destino =
         `/projects/${projectId}/${category}/${encodeURIComponent(
           device.ubicacion_zip
-        )}/${siguiente.id}`
-      );
-
-      return;
+        )}/${siguiente.id}`;
 
     }
 
   }
 
   //----------------------------------
-  // Resto de dispositivos
+  // Guardar destino y abrir diálogo
   //----------------------------------
 
-  navigate(`/projects/${projectId}`);
+  setNextRoute(destino);
+
+  setShareDialogOpen(true);
+
+}
+async function compartirZip() {
+
+  try {
+
+    await shareZip();
+
+  }
+
+  catch (error) {
+
+    console.error(error);
+
+  }
+
+  setShareDialogOpen(false);
+
+  navigate(nextRoute);
+
+}
+
+function continuarSinEnviar() {
+
+  setShareDialogOpen(false);
+
+  navigate(nextRoute);
 
 }
 
@@ -694,6 +707,15 @@ async function actualizarEstado() {
   </div>
 
 )}
+<ShareZipDialog
+
+  open={shareDialogOpen}
+
+  onShare={compartirZip}
+
+  onSkip={continuarSinEnviar}
+
+/>
 
   </Page>
 
