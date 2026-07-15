@@ -35,8 +35,7 @@ export default function PhotoGallery({
   const [cameraOpen, setCameraOpen] =
     useState(false);
 
-  const [saving, setSaving] =
-    useState(false);
+ 
 
  useEffect(() => {
 
