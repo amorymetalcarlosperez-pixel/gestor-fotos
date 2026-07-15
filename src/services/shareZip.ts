@@ -1,75 +1,37 @@
-import JSZip from "jszip";
+export async function shareZip() {
 
-export async function shareZip(
-  nombre: string
-) {
+  alert("Entrando en shareZip");
 
-  const zip = new JSZip();
+  if (!navigator.share) {
 
-  zip.file(
-    "prueba.txt",
-    "Inventario generado correctamente"
-  );
-
-  const blob =
-    await zip.generateAsync({
-      type: "blob",
-    });
-
-  const file =
-    new File(
-      [blob],
-      `${nombre}.zip`,
-      {
-        type: "application/zip",
-      }
-    );
-
-  //----------------------------------------
-  // Android moderno
-  //----------------------------------------
-
-  if (
-
-    navigator.canShare &&
-
-    navigator.canShare({
-      files: [file],
-    })
-
-  ) {
-
-    await navigator.share({
-
-      files: [file],
-
-      title: nombre,
-
-      text: "Inventario",
-
-    });
+    alert("navigator.share NO existe");
 
     return;
 
   }
 
-  //----------------------------------------
-  // Plan B
-  //----------------------------------------
+  alert("navigator.share existe");
 
-  const url =
-    URL.createObjectURL(blob);
+  try {
 
-  const a =
-    document.createElement("a");
+    await navigator.share({
 
-  a.href = url;
+      title: "Prueba",
 
-  a.download =
-    `${nombre}.zip`;
+      text: "Hola desde Gestor Fotos"
 
-  a.click();
+    });
 
-  URL.revokeObjectURL(url);
+    alert("Compartido");
+
+  }
+
+  catch (e) {
+
+    console.error(e);
+
+    alert("Cancelado o error");
+
+  }
 
 }
