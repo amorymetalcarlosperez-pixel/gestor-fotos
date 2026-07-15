@@ -189,9 +189,8 @@ export default function CameraCapture({
 
       await onCapture(file);
 
-      detener();
-
-      onClose();
+      // NO cerramos la cámara.
+      // Permanece abierta para hacer más fotografías.
 
     }
 
@@ -239,7 +238,7 @@ export default function CameraCapture({
 
       />
 
-      <div className="flex justify-between">
+      <div className="flex gap-3">
 
         <button
 
@@ -254,6 +253,7 @@ export default function CameraCapture({
           }}
 
           className="
+            flex-1
             px-6
             py-3
             rounded-xl
@@ -276,10 +276,10 @@ export default function CameraCapture({
             saving
           }
 
-          onClick={           
-            capturar}
+          onClick={capturar}
 
           className="
+            flex-1
             px-8
             py-3
             rounded-xl
@@ -293,6 +293,33 @@ export default function CameraCapture({
           {saving
             ? "Guardando..."
             : "📷 Capturar"}
+
+        </button>
+
+        <button
+
+          type="button"
+
+          onClick={() => {
+
+            detener();
+
+            onClose();
+
+          }}
+
+          className="
+            flex-1
+            px-6
+            py-3
+            rounded-xl
+            bg-red-600
+            text-white
+          "
+
+        >
+
+          Finalizar
 
         </button>
 

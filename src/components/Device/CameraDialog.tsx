@@ -37,7 +37,7 @@ export default function CameraDialog({
           rounded-2xl
           p-4
           w-full
-          max-w-5xl
+          max-w-4xl
           shadow-2xl
         "
         onClick={(e) => e.stopPropagation()}

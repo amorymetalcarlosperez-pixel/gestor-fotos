@@ -123,6 +123,7 @@ if (!lista.error) {
     setComments(data.comments ?? "");
 
     await ensureDeviceStatus(
+      
       projectId!,
       data.id
     );
