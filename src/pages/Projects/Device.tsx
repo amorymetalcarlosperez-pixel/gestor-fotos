@@ -233,7 +233,7 @@ async function finalizar() {
   try {
 
     await shareZip(
-      device.display_name || "Dispositivo"
+              //device.display_name || "Dispositivo"
     );
 
   }
