@@ -38,33 +38,29 @@ export default function PhotoGallery({
   const [saving, setSaving] =
     useState(false);
 
-  useEffect(() => {
+ useEffect(() => {
 
-    const handleOpenCamera = () => {
+  const handleOpenCamera = () => {
 
-      if (!saving) {
+    setCameraOpen(true);
 
-        setCameraOpen(true);
+  };
 
-      }
+  window.addEventListener(
+    "open-photo-camera",
+    handleOpenCamera
+  );
 
-    };
+  return () => {
 
-    window.addEventListener(
+    window.removeEventListener(
       "open-photo-camera",
       handleOpenCamera
     );
 
-    return () => {
+  };
 
-      window.removeEventListener(
-        "open-photo-camera",
-        handleOpenCamera
-      );
-
-    };
-
-  }, [saving]);
+}, []);
 
   useEffect(() => {
 
@@ -75,21 +71,20 @@ export default function PhotoGallery({
     carpeta,
   ]);
 
-  useEffect(() => {
+ useEffect(() => {
 
-    if (forceOpen && !saving) {
+  if (forceOpen) {
 
-      setCameraOpen(true);
+    setCameraOpen(true);
 
-      onOpenHandled?.();
+    onOpenHandled?.();
 
-    }
+  }
 
-  }, [
-    forceOpen,
-    onOpenHandled,
-    saving,
-  ]);
+}, [
+  forceOpen,
+  onOpenHandled,
+]);
 
   async function cargar() {
 
@@ -119,10 +114,7 @@ export default function PhotoGallery({
 
   }
 
- async function capturar(file: File) {
-
-  if (saving)
-    return;
+async function capturar(file: File) {
 
   //----------------------------------------
   // Cerrar la cámara inmediatamente
@@ -130,10 +122,8 @@ export default function PhotoGallery({
 
   setCameraOpen(false);
 
-  setSaving(true);
-
   //----------------------------------------
-  // Subida en segundo plano
+  // La subida continúa en segundo plano
   //----------------------------------------
 
   addPhoto(
@@ -158,12 +148,6 @@ export default function PhotoGallery({
       alert(
         "Error al guardar la fotografía."
       );
-
-    })
-
-    .finally(() => {
-
-      setSaving(false);
 
     });
 
@@ -235,7 +219,6 @@ export default function PhotoGallery({
             setCameraOpen(true);
 
           }}
-          disabled={saving}
           className="
             btn-spotify
             rounded-2xl
@@ -247,9 +230,7 @@ export default function PhotoGallery({
           "
         >
 
-          {saving
-            ? "Guardando..."
-            : "Añadir foto"}
+          Añadir foto
 
         </button>
 
