@@ -1,5 +1,5 @@
 import { supabase } from "./supabase";
-
+import { enqueueWhatsapp } from "./whatsappQueue";
 export type DeviceStatus = {
 
   id: string;
@@ -256,27 +256,50 @@ export async function finishDevice(
   } =
     await supabase.auth.getUser();
 
+  const result =
+    await supabase
 
-  return await supabase
+      .from("device_status")
 
-    .from("device_status")
+      .update({
 
-    .update({
+        finalizado: true,
 
-      finalizado: true,
+        finalizado_at:
+          new Date().toISOString(),
 
-      finalizado_at:
-        new Date().toISOString(),
+        finalizado_por:
+          user?.id ?? null,
 
-      finalizado_por:
-        user?.id ?? null,
+      })
 
-    })
+      .eq(
+        "project_device_id",
+        projectDeviceId
+      );
 
-    .eq(
-      "project_device_id",
+  //-----------------------------------
+  // Crear envío pendiente
+  //-----------------------------------
+
+  try {
+
+    await enqueueWhatsapp(
       projectDeviceId
     );
+
+  }
+
+  catch (e) {
+
+    console.error(
+      "No se pudo crear la cola de WhatsApp",
+      e
+    );
+
+  }
+
+  return result;
 
 }
 

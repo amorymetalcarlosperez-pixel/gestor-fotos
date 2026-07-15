@@ -24,6 +24,10 @@ export default function CameraCapture({
 
   const [saving, setSaving] =
     useState(false);
+    const [quality, setQuality] =
+  useState<"FAST" | "NORMAL" | "HIGH">(
+    "NORMAL"
+  );
 
   useEffect(() => {
 
@@ -120,101 +124,172 @@ export default function CameraCapture({
 
   }
 
-  async function capturar() {
+async function capturar() {
 
-    if (
-      !ready ||
-      saving
-    )
-      return;
+  if (
+    !ready ||
+    saving
+  )
+    return;
 
-    const video =
-      videoRef.current;
+  const video =
+    videoRef.current;
 
-    const canvas =
-      canvasRef.current;
+  const canvas =
+    canvasRef.current;
 
-    if (
-      !video ||
-      !canvas
-    )
-      return;
+  if (
+    !video ||
+    !canvas
+  )
+    return;
 
-    setSaving(true);
+  setSaving(true);
 
-    try {
+  try {
 
-      canvas.width =
-        video.videoWidth;
+    //----------------------------------------
+    // Calidad seleccionada
+    //----------------------------------------
 
-      canvas.height =
-        video.videoHeight;
+    let maxWidth =
+      video.videoWidth;
 
-      const ctx =
-        canvas.getContext("2d");
+    let jpegQuality = 1;
 
-      if (!ctx)
-        return;
+    switch (quality) {
 
-      ctx.drawImage(
-        video,
-        0,
-        0,
-        canvas.width,
-        canvas.height
+      case "FAST":
+
+        maxWidth = 1280;
+        jpegQuality = 0.80;
+
+        break;
+
+      case "NORMAL":
+
+        maxWidth = 1920;
+        jpegQuality = 0.90;
+
+        break;
+
+      case "HIGH":
+
+        maxWidth =
+          video.videoWidth;
+
+        jpegQuality = 1;
+
+        break;
+
+    }
+
+    //----------------------------------------
+    // Calcular tamaño manteniendo proporción
+    //----------------------------------------
+
+    const scale =
+      Math.min(
+        1,
+        maxWidth /
+          video.videoWidth
       );
 
-      const blob =
-        await new Promise<Blob | null>((resolve) =>
-
-          canvas.toBlob(
-            resolve,
-            "image/jpeg",
-            0.9
-          )
-
-        );
-
-      if (!blob)
-        return;
-
-      const file =
-        new File(
-          [blob],
-          `${Date.now()}.jpg`,
-          {
-            type: "image/jpeg",
-          }
-        );
-
-      await onCapture(file);
-
-      // NO cerramos la cámara.
-      // Permanece abierta para hacer más fotografías.
-
-    }
-
-    catch (error) {
-
-      console.error(error);
-
-      alert(
-        "Error al guardar la fotografía."
+    canvas.width =
+      Math.round(
+        video.videoWidth *
+          scale
       );
 
-    }
+    canvas.height =
+      Math.round(
+        video.videoHeight *
+          scale
+      );
 
-    finally {
+    const ctx =
+      canvas.getContext("2d");
 
-      setSaving(false);
+    if (!ctx)
+      return;
 
-    }
+    ctx.drawImage(
+      video,
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
+
+    //----------------------------------------
+    // Crear JPEG
+    //----------------------------------------
+
+    const blob =
+      await new Promise<Blob | null>((resolve) =>
+
+        canvas.toBlob(
+          resolve,
+          "image/jpeg",
+          jpegQuality
+        )
+
+      );
+
+    if (!blob)
+      return;
+
+    console.log(
+      "Modo:",
+      quality,
+      "Resolución:",
+      canvas.width + "x" + canvas.height,
+      "Tamaño:",
+      Math.round(blob.size / 1024) + " KB"
+    );
+
+    const file =
+      new File(
+        [blob],
+        `${Date.now()}.jpg`,
+        {
+          type: "image/jpeg",
+        }
+      );
+
+    //----------------------------------------
+    // Subida en segundo plano
+    //----------------------------------------
+
+    onCapture(file);
+
+    //----------------------------------------
+    // Cámara disponible inmediatamente
+    //----------------------------------------
+
+    setSaving(false);
 
   }
 
-  return (
+  catch (error) {
 
-    <div className="space-y-4">
+    console.error(error);
+
+    alert(
+      "Error al capturar la fotografía."
+    );
+
+    setSaving(false);
+
+  }
+
+}
+
+ return (
+
+  <div className="space-y-6">
+
+    <div className="rounded-2xl overflow-hidden border border-white/10">
 
       <video
 
@@ -226,107 +301,115 @@ export default function CameraCapture({
 
         muted
 
-        className="w-full rounded-xl bg-black"
+        className="
+          w-full
+          aspect-video
+          rounded-2xl
+          bg-black
+          object-cover
+        "
 
       />
 
-      <canvas
+    </div>
 
-        ref={canvasRef}
+    <canvas
+      ref={canvasRef}
+      className="hidden"
+    />
 
-        className="hidden"
+    <div>
 
-      />
+      <div className="text-sm font-semibold text-slate-300 mb-3">
+        Calidad
+      </div>
 
-      <div className="flex gap-3">
+      <div className="grid grid-cols-3 gap-3">
 
         <button
-
           type="button"
-
-          onClick={() => {
-
-            detener();
-
-            onClose();
-
-          }}
-
-          className="
-            flex-1
-            px-6
-            py-3
+          onClick={() => setQuality("FAST")}
+          className={`
             rounded-xl
-            bg-gray-500
-            text-white
-          "
-
+            py-3
+            font-semibold
+            transition
+            ${
+              quality === "FAST"
+                ? "btn-primary"
+                : "btn-secondary"
+            }
+          `}
         >
-
-          Cancelar
-
+          Rápida
         </button>
 
         <button
-
           type="button"
-
-          disabled={
-            !ready ||
-            saving
-          }
-
-          onClick={capturar}
-
-          className="
-            flex-1
-            px-8
-            py-3
+          onClick={() => setQuality("NORMAL")}
+          className={`
             rounded-xl
-            bg-blue-600
-            text-white
-            disabled:opacity-50
-          "
-
+            py-3
+            font-semibold
+            transition
+            ${
+              quality === "NORMAL"
+                ? "btn-primary"
+                : "btn-secondary"
+            }
+          `}
         >
-
-          {saving
-            ? "Guardando..."
-            : "📷 Capturar"}
-
+          Normal
         </button>
 
         <button
-
           type="button"
-
-          onClick={() => {
-
-            detener();
-
-            onClose();
-
-          }}
-
-          className="
-            flex-1
-            px-6
-            py-3
+          onClick={() => setQuality("HIGH")}
+          className={`
             rounded-xl
-            bg-red-600
-            text-white
-          "
-
+            py-3
+            font-semibold
+            transition
+            ${
+              quality === "HIGH"
+                ? "btn-primary"
+                : "btn-secondary"
+            }
+          `}
         >
-
-          Finalizar
-
+          Alta
         </button>
 
       </div>
 
     </div>
 
-  );
+    <div className="space-y-3">
 
+    <button
+      type="button"
+      disabled={!ready || saving}
+      onClick={capturar}
+      className="
+        w-full
+        btn-primary
+        py-4
+        rounded-2xl
+        text-lg
+        font-semibold
+        disabled:opacity-50
+      "
+    >
+
+      {saving
+        ? "Guardando fotografía..."
+        : "Capturar fotografía"}
+
+  </button>
+
+    </div>
+
+  </div>
+
+);
 }

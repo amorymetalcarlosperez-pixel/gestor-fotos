@@ -8,6 +8,7 @@ import DeviceResume from "../../components/Device/DeviceResume";
 import DeviceActions from "../../components/Device/DeviceActions";
 import DeviceNavigation from "../../components/Device/DeviceNavigation";
 import MoveDeviceDialog from "../../components/Device/MoveDeviceDialog";
+import { shareZip } from "../../services/shareZip";
 import Card from "../../components/ui/Card";
 import {
   getProjectDevice,
@@ -198,7 +199,7 @@ ${codigo}
 
 }
 
- async function finalizar() {
+async function finalizar() {
 
   if (!device)
     return;
@@ -222,6 +223,27 @@ ${codigo}
   } else {
 
     await finishDevice(device.id);
+
+  }
+
+  //----------------------------------
+  // Compartir ZIP (de momento de prueba)
+  //----------------------------------
+
+  try {
+
+    await shareZip(
+      device.display_name || "Dispositivo"
+    );
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "Error compartiendo ZIP",
+      error
+    );
 
   }
 
