@@ -26,12 +26,14 @@ export async function shareZip() {
 
   }
 
-  catch (e) {
+  catch (e: any) {
 
-    console.error(e);
+  console.error(e);
 
-    alert("Cancelado o error");
+  alert(e?.name);
 
-  }
+  alert(e?.message);
+
+}
 
 }
