@@ -104,25 +104,49 @@ export async function prepareZip(
 
   }
 
-  const blob =
-    await zip.generateAsync({
+ const blob =
+  await zip.generateAsync({
 
-      type: "blob",
+    type: "blob",
 
-    });
+  });
 
-  return new File(
+const arrayBuffer =
+  await blob.arrayBuffer();
 
-    [blob],
+// DESCARGA TEMPORAL
+const url =
+  URL.createObjectURL(blob);
 
-    `${displayName}.zip`,
+const a =
+  document.createElement("a");
 
-    {
+a.href = url;
 
-      type: "application/zip",
+a.download = "prueba.zip";
 
-    }
+document.body.appendChild(a);
 
-  );
+a.click();
+
+document.body.removeChild(a);
+
+URL.revokeObjectURL(url);
+
+return new File(
+
+  [arrayBuffer],
+
+  `${displayName}.zip`,
+
+  {
+
+    type: "application/zip",
+
+    lastModified: Date.now(),
+
+  }
+
+);
 
 }
