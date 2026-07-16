@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-//import { prepareZip } from "../../services/prepareZip";
+import { prepareZip } from "../../services/prepareZip";
 import { useNavigate, useParams } from "react-router-dom";
 import PhotoGallery from "../../components/Device/PhotoGallery";
 import ScannerDialog from "../../components/Device/ScannerDialog";
@@ -40,8 +40,8 @@ export default function Device() {
   } = useParams();
 
   const navigate = useNavigate();
-//const [zipFile, setZipFile] =
- // useState<File | null>(null);
+  const [zipFile, setZipFile] =
+  useState<File | null>(null);
 
 
   const [device, setDevice] =
@@ -272,23 +272,23 @@ async function finalizar() {
 
 try {
 
-  //const file =
-  //  await prepareZip(
+  const file =
+   await prepareZip(
 
-  //    device.id,
+     device.id,
 
-   //   device.display_name || "Dispositivo"
+     device.display_name || "Dispositivo"
 
-  //  );
+    );
 
-  //setZipFile(file);
+  setZipFile(file);
 
 }
 catch (e) {
 
-  //console.error(e);
+  console.error(e);
 
- // setZipFile(null);
+  setZipFile(null);
 
 }
 finally {
@@ -304,27 +304,13 @@ async function compartirZip() {
 
   try {
 
-    const file = new File(
+   if (!zipFile)
+  return;
 
-      ["Hola"],
-
-      "prueba.txt",
-
-      {
-
-        type: "text/plain",
-
-      }
-
-    );
-
-    await navigator.share({
-
-      files: [file],
-
-      title: "Prueba",
-
-    });
+await navigator.share({
+  files: [zipFile],
+  title: zipFile.name,
+});
 
     console.log("Compartido correctamente");
 
