@@ -53,15 +53,17 @@ export async function getPhotoSignedUrl(
 
       .from("photos")
 
-      .createSignedUrl(
-        path,
-        3600
-      );
+      .download(path);
 
-  if (error)
+  if (error) {
+
+    console.error(error);
+
     return null;
 
-  return data.signedUrl;
+  }
+
+  return URL.createObjectURL(data);
 
 }
 
