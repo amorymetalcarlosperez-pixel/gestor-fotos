@@ -302,58 +302,39 @@ setShareDialogOpen(true);
 }
 async function compartirZip() {
 
-  if (!zipFile)
-    return;
-
   try {
-    console.log("zipFile:", zipFile);
-console.log("nombre:", zipFile.name);
-console.log("tamaño:", zipFile.size);
-console.log("tipo:", zipFile.type);
 
-if (navigator.canShare) {
-  console.log(
-    "canShare:",
-    navigator.canShare({
-      files: [zipFile],
-    })
-  );
-}
+    const file = new File(
+
+      ["Hola"],
+
+      "prueba.txt",
+
+      {
+
+        type: "text/plain",
+
+      }
+
+    );
+
     await navigator.share({
 
-      files: [zipFile],
+      files: [file],
 
-      title: zipFile.name,
-      //title: "Prueba",
-      //text: "Hola desde Gestor Fotos",
+      title: "Prueba",
 
     });
+
+    console.log("Compartido correctamente");
 
   }
 
   catch (error) {
 
-  console.error(error);
-
-  if (error instanceof DOMException) {
-
-    alert(
-      `${error.name}\n${error.message}`
-    );
-
-  } else {
-
-    alert(String(error));
+    console.error(error);
 
   }
-
-}
-
-  setShareDialogOpen(false);
-
-  setZipFile(null);
-
-  navigate(nextRoute);
 
 }
 
