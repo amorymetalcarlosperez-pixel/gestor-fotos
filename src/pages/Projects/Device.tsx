@@ -274,8 +274,7 @@ try {
 
   const files =
   await sharePhotos(
-    device.id,
-    device.display_name || "Dispositivo"
+    device.id
   );
 
 setPhotoFiles(files);

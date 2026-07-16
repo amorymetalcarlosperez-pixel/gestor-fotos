@@ -2,8 +2,7 @@ import { supabase } from "./supabase";
 import { getProjectDevice } from "./projectDevices";
 
 export async function sharePhotos(
-  deviceId: string,
-  displayName: string
+  deviceId: string
 ): Promise<File[]> {
 
   const {
