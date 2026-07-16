@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { prepareZip } from "../../services/prepareZip";
+import { sharePhotos } from "../../services/sharePhotos";
 import { useNavigate, useParams } from "react-router-dom";
 import PhotoGallery from "../../components/Device/PhotoGallery";
 import ScannerDialog from "../../components/Device/ScannerDialog";
@@ -40,8 +40,8 @@ export default function Device() {
   } = useParams();
 
   const navigate = useNavigate();
-  const [zipFile, setZipFile] =
-  useState<File | null>(null);
+  const [photoFiles, setPhotoFiles] =
+  useState<File[]>([]);
 
 
   const [device, setDevice] =
@@ -272,24 +272,20 @@ async function finalizar() {
 
 try {
 
-  const file =
-   await prepareZip(
+  const files =
+  await sharePhotos(
+    device.id,
+    device.display_name || "Dispositivo"
+  );
 
-     device.id,
-
-     device.display_name || "Dispositivo"
-
-    );
-
-  setZipFile(file);
+setPhotoFiles(files);
 
 }
 catch (e) {
 
   console.error(e);
 
-  setZipFile(null);
-
+  
 }
 finally {
 
@@ -302,17 +298,18 @@ setShareDialogOpen(true);
 }
 async function compartirZip() {
 
+  if (photoFiles.length === 0)
+    return;
+
   try {
 
-   if (!zipFile)
-  return;
+    await navigator.share({
 
-await navigator.share({
-  files: [zipFile],
-  title: zipFile.name,
-});
+      files: photoFiles,
 
-    console.log("Compartido correctamente");
+      title: "Fotografías",
+
+    });
 
   }
 
@@ -321,6 +318,12 @@ await navigator.share({
     console.error(error);
 
   }
+
+  setShareDialogOpen(false);
+
+  setPhotoFiles([]);
+
+  navigate(nextRoute);
 
 }
 
