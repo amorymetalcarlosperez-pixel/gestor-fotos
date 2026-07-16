@@ -128,24 +128,13 @@ console.log(
 // Crear fichero
 //----------------------------------
 
-const zipFile =
-  new File(
-
-    [zipBlob],
-
-    `${displayName}.zip`,
-
-    {
-
-      type: "application/zip",
-
-    }
-
-  );
-
-console.log(
-  "Archivo:",
-  zipFile.size
+const zipFile = new File(
+  [await zipBlob.arrayBuffer()],
+  `${displayName}.zip`,
+  {
+    type: "application/zip",
+    lastModified: Date.now(),
+  }
 );
 
 //----------------------------------
