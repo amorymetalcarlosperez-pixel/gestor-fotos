@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { prepareZip } from "../../services/prepareZip";
 import { useNavigate, useParams } from "react-router-dom";
 import PhotoGallery from "../../components/Device/PhotoGallery";
 import ScannerDialog from "../../components/Device/ScannerDialog";
@@ -9,7 +10,6 @@ import DeviceActions from "../../components/Device/DeviceActions";
 import DeviceNavigation from "../../components/Device/DeviceNavigation";
 import MoveDeviceDialog from "../../components/Device/MoveDeviceDialog";
 import ShareZipDialog from "../../components/Device/ShareZipDialog";
-import { shareZip } from "../../services/shareZip";
 import Card from "../../components/ui/Card";
 import {
   getProjectDevice,
@@ -40,6 +40,9 @@ export default function Device() {
   } = useParams();
 
   const navigate = useNavigate();
+const [zipFile, setZipFile] =
+  useState<File | null>(null);
+
 
   const [device, setDevice] =
     useState<ProjectDevice | null>(null);
@@ -265,28 +268,90 @@ async function finalizar() {
 
   setNextRoute(destino);
 
-  setShareDialogOpen(true);
+
+
+try {
+
+  const file =
+    await prepareZip(
+
+      device.id,
+
+      device.display_name || "Dispositivo"
+
+    );
+
+  setZipFile(file);
+
+}
+catch (e) {
+
+  console.error(e);
+
+  setZipFile(null);
+
+}
+finally {
+
+  //setPreparingZip(false);
+
+}
+
+setShareDialogOpen(true);
 
 }
 async function compartirZip() {
-if (!device)
-    return;
-  try {
 
-    await shareZip(
-    device.id,
-    device.display_name || "Dispositivo"
-);
+  if (!zipFile)
+    return;
+
+  try {
+    console.log("zipFile:", zipFile);
+console.log("nombre:", zipFile.name);
+console.log("tamaño:", zipFile.size);
+console.log("tipo:", zipFile.type);
+
+if (navigator.canShare) {
+  console.log(
+    "canShare:",
+    navigator.canShare({
+      files: [zipFile],
+    })
+  );
+}
+    await navigator.share({
+
+      files: [zipFile],
+
+      title: zipFile.name,
+      // title: "Prueba",
+  //text: "Hola desde Gestor Fotos",
+
+    });
 
   }
 
   catch (error) {
 
-    console.error(error);
+  console.error(error);
+
+  if (error instanceof DOMException) {
+
+    alert(
+      `${error.name}\n${error.message}`
+    );
+
+  } else {
+
+    alert(String(error));
 
   }
 
+}
+
   setShareDialogOpen(false);
+
+  setZipFile(null);
 
   navigate(nextRoute);
 
