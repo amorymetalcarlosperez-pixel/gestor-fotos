@@ -269,10 +269,14 @@ async function finalizar() {
 
 }
 async function compartirZip() {
-
+if (!device)
+    return;
   try {
 
-    await shareZip();
+    await shareZip(
+    device.id,
+    device.display_name || "Dispositivo"
+);
 
   }
 
