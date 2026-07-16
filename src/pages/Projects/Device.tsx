@@ -40,8 +40,8 @@ export default function Device() {
   } = useParams();
 
   const navigate = useNavigate();
-const [zipFile, setZipFile] =
-  useState<File | null>(null);
+//const [zipFile, setZipFile] =
+ // useState<File | null>(null);
 
 
   const [device, setDevice] =
@@ -272,23 +272,23 @@ async function finalizar() {
 
 try {
 
-  const file =
-    await prepareZip(
+  //const file =
+  //  await prepareZip(
 
-      device.id,
+  //    device.id,
 
-      device.display_name || "Dispositivo"
+   //   device.display_name || "Dispositivo"
 
-    );
+  //  );
 
-  setZipFile(file);
+  //setZipFile(file);
 
 }
 catch (e) {
 
-  console.error(e);
+  //console.error(e);
 
-  setZipFile(null);
+ // setZipFile(null);
 
 }
 finally {
