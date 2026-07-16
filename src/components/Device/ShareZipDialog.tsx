@@ -2,6 +2,8 @@ type Props = {
 
   open: boolean;
 
+  step: "ANTES" | "DESPUES";
+
   onShare: () => void;
 
   onSkip: () => void;
@@ -11,6 +13,8 @@ type Props = {
 export default function ShareZipDialog({
 
   open,
+
+  step,
 
   onShare,
 
@@ -54,10 +58,13 @@ export default function ShareZipDialog({
 
         </div>
 
-        <div className="mt-3 text-slate-400">
+       <div className="mt-3 text-slate-400">
 
-          ¿Deseas enviar ahora las fotografías
-          por WhatsApp?
+          {step === "ANTES"
+
+            ? "¿Deseas enviar ahora las fotografías del ANTES por WhatsApp?"
+
+            : "¿Deseas enviar ahora las fotografías del DESPUÉS por WhatsApp?"}
 
         </div>
 
@@ -77,7 +84,11 @@ export default function ShareZipDialog({
 
           >
 
-            Compartir ZIP
+            {step === "ANTES"
+
+              ? "Enviar fotografías ANTES"
+
+              : "Enviar fotografías DESPUÉS"}
 
           </button>
 

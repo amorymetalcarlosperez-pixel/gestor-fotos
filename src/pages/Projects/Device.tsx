@@ -40,9 +40,8 @@ export default function Device() {
   } = useParams();
 
   const navigate = useNavigate();
-  
-
-
+  const [shareStep, setShareStep] =
+  useState<"ANTES" | "DESPUES">("ANTES");
   const [device, setDevice] =
     useState<ProjectDevice | null>(null);
   const [puestoDevices, setPuestoDevices] =
@@ -67,7 +66,10 @@ const photoDevice =
     useState<"ANTES" | "DESPUES" | null>(null);
     const [shareDialogOpen, setShareDialogOpen] =
   useState(false);
+  
 
+  const [hasAfterPhotos, setHasAfterPhotos] =
+  useState(false);
   const [nextRoute, setNextRoute] =
   useState("");
 
@@ -264,8 +266,19 @@ async function finalizar() {
   //----------------------------------
   // Guardar destino y abrir diálogo
   //----------------------------------
+const despuesFiles =
+  await sharePhotos(
+    device.id,
+    "DESPUES"
+  );
 
-  setNextRoute(destino);
+setHasAfterPhotos(
+  despuesFiles.length > 0
+);
+
+setShareStep("ANTES");
+
+setNextRoute(destino);
 
 setShareDialogOpen(true);
 
@@ -281,21 +294,37 @@ async function compartirZip() {
     // Compartir ANTES
     //----------------------------------
 
-    const antesFiles =
-      await sharePhotos(
-        device.id,
-        "ANTES"
-      );
+    if (shareStep === "ANTES") {
 
-    if (antesFiles.length > 0) {
+      const antesFiles =
+        await sharePhotos(
+          device.id,
+          "ANTES"
+        );
 
-      await navigator.share({
+      if (antesFiles.length > 0) {
 
-        files: antesFiles,
+        await navigator.share({
 
-        title: "ANTES",
+          files: antesFiles,
 
-      });
+          title: "ANTES",
+
+        });
+
+      }
+
+      //----------------------------------
+      // ¿Hay fotos DESPUES?
+      //----------------------------------
+
+      if (hasAfterPhotos) {
+
+        setShareStep("DESPUES");
+
+        return;
+
+      }
 
     }
 
@@ -303,21 +332,25 @@ async function compartirZip() {
     // Compartir DESPUES
     //----------------------------------
 
-    const despuesFiles =
-      await sharePhotos(
-        device.id,
-        "DESPUES"
-      );
+    else {
 
-    if (despuesFiles.length > 0) {
+      const despuesFiles =
+        await sharePhotos(
+          device.id,
+          "DESPUES"
+        );
 
-      await navigator.share({
+      if (despuesFiles.length > 0) {
 
-        files: despuesFiles,
+        await navigator.share({
 
-        title: "DESPUES",
+          files: despuesFiles,
 
-      });
+          title: "DESPUES",
+
+        });
+
+      }
 
     }
 
@@ -757,6 +790,8 @@ async function actualizarEstado() {
 <ShareZipDialog
 
   open={shareDialogOpen}
+
+  step={shareStep}
 
   onShare={compartirZip}
 
