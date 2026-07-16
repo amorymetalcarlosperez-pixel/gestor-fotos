@@ -1,39 +1,103 @@
-export async function shareZip() {
+import JSZip from "jszip";
 
-  alert("Entrando en shareZip");
+import {
+  getPhotos,
+  getPhotoSignedUrl,
+} from "./photos";
 
-  if (!navigator.share) {
+export async function shareZip(
+  deviceId: string,
+  displayName: string
+) {
 
-    alert("navigator.share NO existe");
+  const zip = new JSZip();
 
-    return;
+  //----------------------------------
+  // Carpeta ANTES
+  //----------------------------------
+
+  const antesFolder =
+    zip.folder("ANTES");
+
+  const { data: antes } =
+    await getPhotos(
+      deviceId,
+      "ANTES"
+    );
+
+  let numero = 1;
+
+  for (const photo of antes ?? []) {
+
+    const url =
+      await getPhotoSignedUrl(
+        photo.storage_path
+      );
+
+    if (!url)
+      continue;
+
+    const response =
+      await fetch(url);
+
+    const blob =
+      await response.blob();
+
+    antesFolder?.file(
+      `${numero}.jpg`,
+      blob
+    );
+
+    numero++;
 
   }
 
-  alert("navigator.share existe");
+  //----------------------------------
+  // Crear ZIP
+  //----------------------------------
 
-  try {
+  const zipBlob =
+    await zip.generateAsync({
 
-    await navigator.share({
-
-      title: "Prueba",
-
-      text: "Hola desde Gestor Fotos"
+      type: "blob",
 
     });
 
-    alert("Compartido");
+  const zipFile =
+    new File(
+
+      [zipBlob],
+
+      `${displayName}.zip`,
+
+      {
+
+        type: "application/zip",
+
+      }
+
+    );
+
+  if (
+
+    navigator.canShare &&
+
+    navigator.canShare({
+
+      files: [zipFile],
+
+    })
+
+  ) {
+
+    await navigator.share({
+
+      files: [zipFile],
+
+      title: displayName,
+
+    });
 
   }
-
-  catch (e: any) {
-
-  console.error(e);
-
-  alert(e?.name);
-
-  alert(e?.message);
-
-}
 
 }
