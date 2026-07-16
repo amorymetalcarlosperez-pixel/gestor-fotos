@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { prepareZip } from "../../services/prepareZip";
+//import { prepareZip } from "../../services/prepareZip";
 import { useNavigate, useParams } from "react-router-dom";
 import PhotoGallery from "../../components/Device/PhotoGallery";
 import ScannerDialog from "../../components/Device/ScannerDialog";
