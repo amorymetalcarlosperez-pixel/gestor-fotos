@@ -10,85 +10,108 @@ export async function shareZip(
   displayName: string
 ) {
 
-  const zip = new JSZip();
+  try {
 
-  //----------------------------------
-  // Carpeta ANTES
-  //----------------------------------
+    const zip = new JSZip();
 
-  const antesFolder =
-    zip.folder("ANTES");
+    //----------------------------------
+    // Carpeta ANTES
+    //----------------------------------
 
-  const { data: antes } =
-    await getPhotos(
-      deviceId,
-      "ANTES"
-    );
+    const antesFolder =
+      zip.folder("ANTES");
 
-  let numero = 1;
-
-  for (const photo of antes ?? []) {
-
-    const url =
-      await getPhotoSignedUrl(
-        photo.storage_path
+    const { data: antes, error } =
+      await getPhotos(
+        deviceId,
+        "ANTES"
       );
 
-    if (!url)
-      continue;
+    if (error)
+      throw error;
 
-    const response =
-      await fetch(url);
+    let numero = 1;
 
-    const blob =
-      await response.blob();
+    for (const photo of antes ?? []) {
 
-    antesFolder?.file(
-      `${numero}.jpg`,
-      blob
-    );
+      try {
 
-    numero++;
+        const url =
+          await getPhotoSignedUrl(
+            photo.storage_path
+          );
 
-  }
+        if (!url)
+          continue;
 
-  //----------------------------------
-  // Crear ZIP
-  //----------------------------------
+        const response =
+          await fetch(url);
 
-  const zipBlob =
-    await zip.generateAsync({
+        if (!response.ok)
+          continue;
 
-      type: "blob",
+        const blob =
+          await response.blob();
 
-    });
+        antesFolder?.file(
+          `${numero}.jpg`,
+          blob
+        );
 
-  const zipFile =
-    new File(
-
-      [zipBlob],
-
-      `${displayName}.zip`,
-
-      {
-
-        type: "application/zip",
+        numero++;
 
       }
 
-    );
+      catch (e) {
 
-  if (
+        console.error(
+          "Error descargando foto:",
+          photo.storage_path,
+          e
+        );
 
-    navigator.canShare &&
+      }
 
-    navigator.canShare({
+    }
 
-      files: [zipFile],
+    //----------------------------------
+    // Crear ZIP
+    //----------------------------------
 
-    })
+    const zipBlob =
+      await zip.generateAsync({
 
-  ) {
+        type: "blob",
+
+      });
+
+    const zipFile =
+      new File(
+
+        [zipBlob],
+
+        `${displayName}.zip`,
+
+        {
+
+          type: "application/zip",
+
+        }
+
+      );
+
+    if (
+      !navigator.canShare ||
+      !navigator.canShare({
+        files: [zipFile],
+      })
+    ) {
+
+      alert("Este dispositivo no puede compartir archivos.");
+
+      return;
+
+    }
 
     await navigator.share({
 
@@ -97,6 +120,18 @@ export async function shareZip(
       title: displayName,
 
     });
+
+  }
+
+  catch (e) {
+
+    console.error(e);
+
+    alert(
+      e instanceof Error
+        ? e.message
+        : String(e)
+    );
 
   }
 
