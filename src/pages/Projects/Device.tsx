@@ -321,11 +321,11 @@ if (navigator.canShare) {
 }
     await navigator.share({
 
-      files: [zipFile],
+      //files: [zipFile],
 
-      title: zipFile.name,
-      // title: "Prueba",
-  //text: "Hola desde Gestor Fotos",
+      //title: zipFile.name,
+      title: "Prueba",
+      text: "Hola desde Gestor Fotos",
 
     });
 
