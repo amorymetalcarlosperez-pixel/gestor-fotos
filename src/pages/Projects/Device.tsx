@@ -40,8 +40,7 @@ export default function Device() {
   } = useParams();
 
   const navigate = useNavigate();
-  const [photoFiles, setPhotoFiles] =
-  useState<File[]>([]);
+  
 
 
   const [device, setDevice] =
@@ -268,47 +267,59 @@ async function finalizar() {
 
   setNextRoute(destino);
 
-
-
-try {
-
-  const files =
-  await sharePhotos(
-    device.id
-  );
-
-setPhotoFiles(files);
-
-}
-catch (e) {
-
-  console.error(e);
-
-  
-}
-finally {
-
-  //setPreparingZip(false);
-
-}
-
 setShareDialogOpen(true);
 
 }
 async function compartirZip() {
 
-  if (photoFiles.length === 0)
+  if (!device)
     return;
 
   try {
 
-    await navigator.share({
+    //----------------------------------
+    // Compartir ANTES
+    //----------------------------------
 
-      files: photoFiles,
+    const antesFiles =
+      await sharePhotos(
+        device.id,
+        "ANTES"
+      );
 
-      title: "Fotografías",
+    if (antesFiles.length > 0) {
 
-    });
+      await navigator.share({
+
+        files: antesFiles,
+
+        title: "ANTES",
+
+      });
+
+    }
+
+    //----------------------------------
+    // Compartir DESPUES
+    //----------------------------------
+
+    const despuesFiles =
+      await sharePhotos(
+        device.id,
+        "DESPUES"
+      );
+
+    if (despuesFiles.length > 0) {
+
+      await navigator.share({
+
+        files: despuesFiles,
+
+        title: "DESPUES",
+
+      });
+
+    }
 
   }
 
@@ -319,8 +330,6 @@ async function compartirZip() {
   }
 
   setShareDialogOpen(false);
-
-  setPhotoFiles([]);
 
   navigate(nextRoute);
 

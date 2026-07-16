@@ -2,7 +2,8 @@ import { supabase } from "./supabase";
 import { getProjectDevice } from "./projectDevices";
 
 export async function sharePhotos(
-  deviceId: string
+  deviceId: string,
+  carpeta: "ANTES" | "DESPUES"
 ): Promise<File[]> {
 
   const {
@@ -31,7 +32,7 @@ export async function sharePhotos(
 
       .eq("device_id", deviceId)
 
-      .order("carpeta")
+      .eq("carpeta", carpeta)
 
       .order("orden");
 
